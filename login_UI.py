@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import NewAccUI
+
 
 class login_UI:
 
@@ -35,8 +37,22 @@ class login_UI:
         self.show_pass_button = ttk.Button(customer_tab, text='👁', width=4)
         self.show_pass_button.pack(padx=5, pady=5)
         
-        self.show_pass_button.bind('<ButtonPress>', self.show_password)
-        self.show_pass_button.bind('<ButtonRelease>', self.hide_password)
+        self.show_pass_button.bind('<ButtonPress>', self.show_password_customer)
+        self.show_pass_button.bind('<ButtonRelease>', self.hide_password_customer)
+
+        self.submit_button = ttk.Button(customer_tab, text='Submit', width=10, command=self.submit_customer)
+        self.submit_button.pack(padx=5, pady=5)
+
+    def submit_customer(self):
+        # Placeholder for the function to be defined later
+        print("Submit button pressed for customer")
+        self.login.destroy()
+
+    def show_password_customer(self, event):
+        self.customerPass_entry.config(show='')
+        
+    def hide_password_customer(self, event):
+        self.customerPass_entry.config(show='•')
 
 #librarian tab --------------------------------------------------------------
 
@@ -57,9 +73,26 @@ class login_UI:
         self.show_pass_button = ttk.Button(librarian_tab, text='👁', width=4)
         self.show_pass_button.pack(padx=5, pady=5)
         
-        self.show_pass_button.bind('<ButtonPress>', self.show_password)
-        self.show_pass_button.bind('<ButtonRelease>', self.hide_password)
+        self.show_pass_button.bind('<ButtonPress>', self.show_password_librarian)
+        self.show_pass_button.bind('<ButtonRelease>', self.hide_password_librarian)
+
+        self.submit_button = ttk.Button(librarian_tab, text='Submit', width=10, command=self.submit_customer)
+        self.submit_button.pack(padx=5, pady=5)
+
+    def submit_librarian(self):
+        # Placeholder for the function to be defined later
+        print("Submit button pressed for librarian")
+        self.login.destroy()
+
+
+    def show_password_librarian(self, event):
+        self.librarianPass_entry.config(show='')
         
+    def hide_password_librarian(self, event):
+        self.librarianPass_entry.config(show='•')
+
+#help tab -------------------------------------------------------------------
+
     def create_help_tab(self):
         help_tab = ttk.Frame(self.notebook, width=300, height=490)
         self.notebook.add(help_tab, text='Help')
@@ -67,19 +100,18 @@ class login_UI:
         self.help_label = ttk.Label(help_tab, text='Unable to login?')
         self.help_label.pack(padx=10, pady=10)
         
+        self.create_account_button = ttk.Button(help_tab, text='Create a new Account', width=20, command=self.run_new_account)
+        self.create_account_button.pack(padx=10, pady=10)
+
         self.C_Reset_button = ttk.Button(help_tab, text='User Reset Password')
         self.C_Reset_button.pack(padx=10, pady=10)
 
         self.L_Reset_button = ttk.Button(help_tab, text='Librarian Reset Password')
         self.L_Reset_button.pack(padx=10, pady=10)
-    
-    def show_password(self, event):
-        self.librarianPass_entry.config(show='')
-        
-    def hide_password(self, event):
-        self.librarianPass_entry.config(show='•')
 
-
+    def run_new_account(self):
+        NewAccUI.CreateAccUI(tk.Tk())
+        self.login.destroy()
 
 if __name__ == "__main__":  # for testing
     login = tk.Tk()
