@@ -48,7 +48,7 @@ def main():
     create_customer_table(conn)
 
     # Insert a customer (Example data)
-    new_customer(conn, 'password123', 'John', 'Doe', 'john.doe@email.com', '123 Main St')
+    new_customer(conn, 'prova pass 1', 'prova nome 1', 'prova cogn 1', 'provae1@email.com', 'prova strada 1')
 
     # Close the connection
     close_connection(conn)
