@@ -1,12 +1,8 @@
-from OldCodes.O_login_UI import login_UI
-from OldCodes.O_mainUI import main_UI
+import tkinter as tk
+from tkinter import ttk
+from login_UI import login_UI  # Assuming login_UI is a class in login_UI.py
 
-# def main():
-#     if logged == True:
-#         main_UI()
-#     else:
-#         login_UI()
-
-
-login_UI()
-main_UI()
+if __name__ == "__main__":  # for testing
+    login = tk.Tk()
+    log = login_UI(login)  # Instantiate the login_UI class
+    login.mainloop()
