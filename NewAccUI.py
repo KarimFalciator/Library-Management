@@ -73,17 +73,17 @@ class CreateAccUI:
         self.CpassConfrim_entry.config(show='•')
 
     def new_customer_record(self):
-        id = database.generate_customer_id()
+        c_id = database.generate_customer_id()
         password = self.customerPass_entry.get()
         first_name = self.Cfirstname_entry.get()
         surname = self.Csurname_entry.get()
         email = self.Cemail_entry.get()
         address = self.Caddress_entry.get()
 
-        print(id, password, first_name, surname, email, address)
+        print(c_id, password, first_name, surname, email, address)
 
 
-        database.new_customer(self.conn, id, password, first_name, surname, email, address)
+        database.new_customer(self.conn, c_id, password, first_name, surname, email, address)
         print("Created new customer account")
         self.new.destroy()
     
@@ -91,7 +91,7 @@ class CreateAccUI:
         C_id_window.title('New Customer ID')
         C_id_window.geometry('200x100')
         C_id_window.resizable(False, False)
-        C_id_window_label = ttk.Label(C_id_window, text='Your new Customer ID is: {id}')
+        C_id_window_label = ttk.Label(C_id_window, text='Your new Customer ID is:' + str(c_id))
         C_id_window_label.pack(pady=10)
 
         advice_label = ttk.Label(C_id_window, text='Please keep this ID safe, you will need it to login')
@@ -157,7 +157,7 @@ class CreateAccUI:
         email = self.Lemail_entry.get()
         address = self.Laddress_entry.get()
 
-        database.new_librarian(self.conn, password, first_name, surname, email, address)
+        database.new_librarian(self.conn, l_id, password, first_name, surname, email, address)
 
         self.new.destroy()
 
@@ -165,7 +165,7 @@ class CreateAccUI:
         L_id_window.title('New Customer ID')
         L_id_window.geometry('200x100')
         L_id_window.resizable(False, False)
-        L_id_window_label = ttk.Label(L_id_window, text='Your new Customer ID is: {id}')
+        L_id_window_label = ttk.Label(L_id_window, text='Your new Customer ID is:' + str(l_id))
         L_id_window_label.pack(pady=10)
 
         advice_label = ttk.Label(L_id_window, text='Please keep this ID safe, you will need it to login')
