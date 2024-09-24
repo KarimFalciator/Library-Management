@@ -128,10 +128,10 @@ class login_UI:
         self.login.destroy()
 
 if __name__ == "__main__":  # for testing
-    # login = tk.Tk()
-    # log = login_UI(login)
-    # login.mainloop()
-    print(dir(database))
+    login = tk.Tk()
+    log = login_UI(login)
+    login.mainloop()
+
 
 
 # class Database:

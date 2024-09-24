@@ -46,25 +46,25 @@ class CreateAccUI:
         self.show_pass_button.bind('<ButtonPress>', self.show_password_customer)
         self.show_pass_button.bind('<ButtonRelease>', self.hide_password_customer)
 
-        self.firstname_label = ttk.Label(customer_tab, text='First Name')
-        self.firstname_label.grid(row=3, column=0, padx=10, pady=10, sticky='w')
-        self.firstname_entry = ttk.Entry(customer_tab)
-        self.firstname_entry.grid(row=4, column=0, padx=10, pady=5, sticky='w')
+        self.Cfirstname_label = ttk.Label(customer_tab, text='First Name')
+        self.Cfirstname_label.grid(row=3, column=0, padx=10, pady=10, sticky='w')
+        self.Cfirstname_entry = ttk.Entry(customer_tab)
+        self.Cfirstname_entry.grid(row=4, column=0, padx=10, pady=5, sticky='w')
 
-        self.surname_label = ttk.Label(customer_tab, text='Surname')
-        self.surname_label.grid(row=3, column=1, padx=10, pady=10, sticky='w')
-        self.surname_entry = ttk.Entry(customer_tab)
-        self.surname_entry.grid(row=4, column=1, padx=10, pady=5, sticky='w')
+        self.Csurname_label = ttk.Label(customer_tab, text='Surname')
+        self.Csurname_label.grid(row=3, column=1, padx=10, pady=10, sticky='w')
+        self.Csurname_entry = ttk.Entry(customer_tab)
+        self.Csurname_entry.grid(row=4, column=1, padx=10, pady=5, sticky='w')
 
-        self.email_label = ttk.Label(customer_tab, text='Email')
-        self.email_label.grid(row=5, column=0, padx=10, pady=10, sticky='w')
-        self.email_entry = ttk.Entry(customer_tab)
-        self.email_entry.grid(row=6, column=0, padx=10, pady=5, sticky='w')
+        self.Cemail_label = ttk.Label(customer_tab, text='Email')
+        self.Cemail_label.grid(row=5, column=0, padx=10, pady=10, sticky='w')
+        self.Cemail_entry = ttk.Entry(customer_tab)
+        self.Cemail_entry.grid(row=6, column=0, padx=10, pady=5, sticky='w')
 
-        self.address_label = ttk.Label(customer_tab, text='Address')
-        self.address_label.grid(row=5, column=1, padx=10, pady=10, sticky='w')
-        self.address_entry = ttk.Entry(customer_tab)
-        self.address_entry.grid(row=6, column=1, padx=10, pady=5, sticky='w')
+        self.Caddress_label = ttk.Label(customer_tab, text='Address')
+        self.Caddress_label.grid(row=5, column=1, padx=10, pady=10, sticky='w')
+        self.Caddress_entry = ttk.Entry(customer_tab)
+        self.Caddress_entry.grid(row=6, column=1, padx=10, pady=5, sticky='w')
 
         self.submit_button = ttk.Button(customer_tab, text='Create', width=10, command=self.new_customer_record)
         self.submit_button.grid(row=7, column=0, padx=5, pady=5, sticky='w')
@@ -79,10 +79,13 @@ class CreateAccUI:
 
     def new_customer_record(self):
         password = self.customerPass_entry.get()
-        first_name = self.firstname_entry.get()
-        surname = self.surname_entry.get()
-        email = self.email_entry.get()
-        address = self.address_entry.get()
+        first_name = self.Cfirstname_entry.get()
+        surname = self.Csurname_entry.get()
+        email = self.Cemail_entry.get()
+        address = self.Caddress_entry.get()
+
+        print(password, first_name, surname, email, address)
+
 
         database.new_customer(self.conn, password, first_name, surname, email, address)
         print("Created new customer account")
