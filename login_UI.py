@@ -59,8 +59,10 @@ class login_UI:
         check = database.check_customer_login(self.conn, customerID, customerPass)
 
         if check:
-            print("Customer login successful")
-            self.login.destroy()
+            success_label = ttk.Label(self.login, text='Login Successful', foreground='#009B0F', font=('Arial', 13))
+            success_label.pack(pady=5)
+            
+            self.login.after(3500, self.login.destroy)
         else:
             error_label = ttk.Label(self.login, text='Invalid ID or password', foreground='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
@@ -104,8 +106,10 @@ class login_UI:
         check = database.check_librarian_login(self.conn, librarianID, librarianPass)
 
         if check:
-            print("Librarian login successful")
-            self.login.destroy()
+            success_label = ttk.Label(self.login, text='Login Successful', foreground='#009B0F', font=('Arial', 13))
+            success_label.pack(pady=5)
+            
+            self.login.after(3500, self.login.destroy)
         else:
             error_label = ttk.Label(self.login, text='Invalid ID or password', foreground='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
@@ -140,10 +144,10 @@ class login_UI:
         NewAccUI.CreateAccUI(tk.Tk())
         self.login.destroy()
 
-if __name__ == "__main__":  # for testing
-    login = tk.Tk()
-    log = login_UI(login)
-    login.mainloop()
+# if __name__ == "__main__":  # for testing
+#     login = tk.Tk()
+#     log = login_UI(login)
+#     login.mainloop()
 
 
 

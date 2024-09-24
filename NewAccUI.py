@@ -78,18 +78,31 @@ class CreateAccUI:
         self.CpassConfrim_entry.config(show='•')
 
     def new_customer_record(self):
+        id = database.generate_customer_id()
         password = self.customerPass_entry.get()
         first_name = self.Cfirstname_entry.get()
         surname = self.Csurname_entry.get()
         email = self.Cemail_entry.get()
         address = self.Caddress_entry.get()
 
-        print(password, first_name, surname, email, address)
+        print(id, password, first_name, surname, email, address)
 
 
-        database.new_customer(self.conn, password, first_name, surname, email, address)
+        database.new_customer(self.conn, id, password, first_name, surname, email, address)
         print("Created new customer account")
+        
+        print(id)
+
         self.new.destroy()
+
+        print(id)
+
+        C_id_window = tk.Tk()
+        C_id_window.title('New Customer ID')
+        C_id_window.geometry('200x100')
+        C_id_window.resizable(False, False)
+        C_id_window_label = ttk.Label(C_id_window, text=f'Your new Customer ID is: {id}')
+        C_id_window_label.pack(pady=10)
 
     def close_connection(self):
         if self.conn:
@@ -118,11 +131,11 @@ class CreateAccUI:
         self.LpassConfrim_entry = ttk.Entry(librarian_tab, show='•')
         self.LpassConfrim_entry.grid(row=2, column=1, padx=10, pady=5, sticky='w')
         
-        self.show_pass_button = ttk.Button(librarian_tab, text='👁', width=4)
-        self.show_pass_button.grid(row=2, column=2, padx=5, pady=5, sticky='w')
+        self.Lshow_pass_button = ttk.Button(librarian_tab, text='👁', width=4)
+        self.Lshow_pass_button.grid(row=2, column=2, padx=5, pady=5, sticky='w')
         
-        self.show_pass_button.bind('<ButtonPress>', self.show_password_librarian)
-        self.show_pass_button.bind('<ButtonRelease>', self.hide_password_librarian)
+        self.Lshow_pass_button.bind('<ButtonPress>', self.show_password_librarian)
+        self.Lshow_pass_button.bind('<ButtonRelease>', self.hide_password_librarian)
         
         self.Lfirstname_label = ttk.Label(librarian_tab, text='First Name')
         self.Lfirstname_label.grid(row=3, column=0, padx=10, pady=10, sticky='w')
@@ -166,9 +179,10 @@ class CreateAccUI:
         self.LpassConfrim_entry.config(show='')
         
     def hide_password_librarian(self, event):
-        self.customerPass_entry.config(show='•')
-        self.CpassConfrim_entry.config(show='•')
+        self.librarianPass_entry.config(show='•')
+        self.LpassConfrim_entry.config(show='•')
 
+#help tab -----------------------------------------------------------------------
 
     def newAcc_help_tab(self):
         help_tab = ttk.Frame(self.notebook, width=300, height=490)
@@ -183,15 +197,8 @@ class CreateAccUI:
         self.help_label = ttk.Label(help_tab, text='Contact us b34226@sfc.potteries.ac.uk')
         self.help_label.pack(padx=10, pady=10)
     
-    def show_password(self, event):
-        self.librarianPass_entry.config(show='')
-        
-    def hide_password(self, event):
-        self.librarianPass_entry.config(show='•')
 
-
-
-if __name__ == "__main__":  # for testing
-    login = tk.Tk()
-    log = CreateAccUI(login)
-    login.mainloop()
+# if __name__ == "__main__":  # for testing
+#     login = tk.Tk()
+#     log = CreateAccUI(login)
+#     login.mainloop()

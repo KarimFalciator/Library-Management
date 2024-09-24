@@ -40,9 +40,9 @@ def generate_customer_id():
     return id
 
 # Function to insert a customer into the database
-def new_customer(conn, password, first_name, surname, email, address):
+def new_customer(conn, c_id, password, first_name, surname, email, address):
     cursor = conn.cursor()
-    customer_data = (generate_customer_id(), password, first_name, surname, email, address)
+    customer_data = (c_id(), password, first_name, surname, email, address)
     
     cursor.execute('''
     INSERT INTO customers (id, password, first_name, surname, email, address)
@@ -87,9 +87,9 @@ def generate_librarian_id():
         id = random.randint(10000, 99999)
     return id
 
-def new_librarian(conn, password, first_name, surname, email, address):
+def new_librarian(conn, l_id, password, first_name, surname, email, address):
     cursor = conn.cursor()
-    librarian_data = (generate_librarian_id(), password, first_name, surname, email, address)
+    librarian_data = (l_id, password, first_name, surname, email, address)
 
     cursor.execute('''
     INSERT INTO librarians (id, password, first_name, surname, email, address)
