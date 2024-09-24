@@ -6,14 +6,14 @@ def generate_unique_id():
     return random.randint(10000, 99999)
 
 # Function to connect to the SQLite database
-def connect_to_db(db_name='customers.db'):
+def connect_to_db(db_name='customersDb.db'):
     return sqlite3.connect(db_name)
 
 # Function to create the customer table
 def create_customer_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS customers (
+    CREATE TABLE IF NOT EXISTS customer (
         id INTEGER PRIMARY KEY,
         password TEXT NOT NULL,
         first_name TEXT NOT NULL,
@@ -30,15 +30,16 @@ def new_customer(conn, password, first_name, surname, email, address):
     customer_data = (generate_unique_id(), password, first_name, surname, email, address)
     
     cursor.execute('''
-    INSERT INTO customers (id, password, first_name, surname, email, address)
+    INSERT INTO customer (id, password, first_name, surname, email, address)
     VALUES (?, ?, ?, ?, ?, ?)
     ''', customer_data)
     conn.commit()
 
+# Function to check customer login credentials
 def check_customer_login(conn, customer_id, password):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM customers WHERE id = ? AND password = ?
+    SELECT * FROM customer WHERE id = ? AND password = ?
     ''', (customer_id, password))
     return cursor.fetchone()
 

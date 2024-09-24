@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import NewAccUI
-
+import database
 
 class login_UI:
 
@@ -13,6 +13,8 @@ class login_UI:
 
         self.notebook = ttk.Notebook(login)
         self.notebook.pack(pady=0, expand=True, fill='both')
+
+        self.conn = database.connect_to_db('customers.db')
 
         self.create_customer_tab()
         self.create_librarian_tab()
@@ -43,16 +45,28 @@ class login_UI:
         self.submit_button = ttk.Button(customer_tab, text='Submit', width=10, command=self.submit_customer)
         self.submit_button.pack(padx=5, pady=5)
 
-    def submit_customer(self):
-        # Placeholder for the function to be defined later
-        print("Submit button pressed for customer")
-        self.login.destroy()
-
     def show_password_customer(self, event):
         self.customerPass_entry.config(show='')
         
     def hide_password_customer(self, event):
         self.customerPass_entry.config(show='•')
+
+    def submit_customer(self):
+        customerID = self.customerID_entry.get()
+        customerPass = self.customerPass_entry.get()
+
+        check = database.check_customer_login(self.conn, customerID, customerPass)
+
+        if check:
+            print("Customer login successful")
+            self.login.destroy()
+        else:
+            print("Customer login failed. Invalid ID or password.")
+
+    def close_connection(self):
+        if self.conn:
+            database.close_connection(self.conn)
+            self.conn = None
 
 #librarian tab --------------------------------------------------------------
 
@@ -114,10 +128,10 @@ class login_UI:
         self.login.destroy()
 
 if __name__ == "__main__":  # for testing
-    login = tk.Tk()
-    log = login_UI(login)
-    login.mainloop()
-
+    # login = tk.Tk()
+    # log = login_UI(login)
+    # login.mainloop()
+    print(dir(database))
 
 
 # class Database:
