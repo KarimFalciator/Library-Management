@@ -1,13 +1,16 @@
 import sqlite3
 import random
 
-# Function to generate a unique random 5-digit ID
-def generate_unique_id():
-    return random.randint(10000, 99999)
 
 # Function to connect to the SQLite database
-def connect_to_db(db_name='customers.db'):
+def connect_to_db(db_name='log_info.db'):
     return sqlite3.connect(db_name)
+
+# Function to close the database connection
+def close_connection(conn):
+    conn.close()
+
+#customers table -----------------------------------------------------------------------------------------
 
 # Function to create the customer table
 def create_customer_table(conn):
@@ -24,10 +27,22 @@ def create_customer_table(conn):
     ''')
     conn.commit()
 
+# Function to generate a unique random 5-digit ID
+def generate_customer_id():
+    id = random.randint(10000, 99999)
+    while True:
+        conn = connect_to_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM customers WHERE id = ?", (id,))
+        if cursor.fetchone() is None:
+            break
+        id = random.randint(10000, 99999)
+    return id
+
 # Function to insert a customer into the database
 def new_customer(conn, password, first_name, surname, email, address):
     cursor = conn.cursor()
-    customer_data = (generate_unique_id(), password, first_name, surname, email, address)
+    customer_data = (generate_customer_id(), password, first_name, surname, email, address)
     
     cursor.execute('''
     INSERT INTO customers (id, password, first_name, surname, email, address)
@@ -42,25 +57,70 @@ def check_customer_login(conn, customer_id, password):
     ''', (customer_id, password))
     return cursor.fetchone()
 
-# Function to close the database connection
-def close_connection(conn):
-    conn.close()
 
-# Main function to run the program
-def main():
-    # Connect to the database
-    conn = connect_to_db()
+#librarians table -----------------------------------------------------------------------------------------
 
-    # Create the customer table
-    create_customer_table(conn)
+def create_librarian_table(conn):
+    cursor = conn.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS librarians(
+        id INTEGER PRIMARY KEY,
+        password TEXT NOT NULL,
+        first_name TEXT NOT NULL,
+        surname TEXT NOT NULL,
+        email TEXT NOT NULL,
+        address TEXT NOT NULL
+    )
+    ''')
 
-    # Insert a customer (Example data)
-    new_customer(conn, 'prova pass 1', 'prova nome 1', 'prova cogn 1', 'provae1@email.com', 'prova strada 1')
+    conn.commit()
 
-    # Close the connection
-    close_connection(conn)
-    print("Customer table created and data inserted!")
+# Function to generate a unique random 5-digit ID
+def generate_librarian_id():
+    id = random.randint(10000, 99999)
+    while True:
+        conn = connect_to_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM librarians WHERE id = ?", (id,))
+        if cursor.fetchone() is None:
+            break
+        id = random.randint(10000, 99999)
+    return id
 
-# Run the program
-if __name__ == "__main__":
-    main()
+def new_librarian(conn, password, first_name, surname, email, address):
+    cursor = conn.cursor()
+    librarian_data = (generate_librarian_id(), password, first_name, surname, email, address)
+
+    cursor.execute('''
+    INSERT INTO librarians (id, password, first_name, surname, email, address)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ''', librarian_data)
+    conn.commit()
+
+def check_librarian_login(conn, librarian_id, password):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT * FROM librarians WHERE id = ? AND password = ?
+    ''', (librarian_id, password))
+    return cursor.fetchone()
+
+
+
+# # Main function to run the program
+# def main():
+#     # Connect to the database
+#     conn = connect_to_db()
+
+#     # Create the customer table
+#     create_librarian_table(conn)
+
+#     # Insert a customer (Example data)
+#     new_librarian(conn, 'prova pass 5', 'prova nome 5', 'prova cogn 5', 'provae5@email.com', 'prova strada 5')
+
+#     # Close the connection
+#     close_connection(conn)
+#     print("Librarian table created and data inserted!")
+
+# # Run the program
+# if __name__ == "__main__":
+#     main()

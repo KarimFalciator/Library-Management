@@ -13,7 +13,7 @@ class CreateAccUI:
         self.notebook = ttk.Notebook(new)
         self.notebook.pack(pady=0, expand=True, fill='both')
 
-        self.conn = database.connect_to_db('customers.db')
+        self.conn = database.connect_to_db('log_info.db')
 
         self.newAcc_customer_tab()
         self.newAcc_librarian_tab()
@@ -124,33 +124,41 @@ class CreateAccUI:
         self.show_pass_button.bind('<ButtonPress>', self.show_password_librarian)
         self.show_pass_button.bind('<ButtonRelease>', self.hide_password_librarian)
         
-        self.firstname_label = ttk.Label(librarian_tab, text='First Name')
-        self.firstname_label.grid(row=3, column=0, padx=10, pady=10, sticky='w')
-        self.firstname_entry = ttk.Entry(librarian_tab)
-        self.firstname_entry.grid(row=4, column=0, padx=10, pady=5, sticky='w')
+        self.Lfirstname_label = ttk.Label(librarian_tab, text='First Name')
+        self.Lfirstname_label.grid(row=3, column=0, padx=10, pady=10, sticky='w')
+        self.Lfirstname_entry = ttk.Entry(librarian_tab)
+        self.Lfirstname_entry.grid(row=4, column=0, padx=10, pady=5, sticky='w')
 
-        self.surname_label = ttk.Label(librarian_tab, text='Surname')
-        self.surname_label.grid(row=3, column=1, padx=10, pady=10, sticky='w')
-        self.surname_entry = ttk.Entry(librarian_tab)
-        self.surname_entry.grid(row=4, column=1, padx=10, pady=5, sticky='w')
+        self.Lsurname_label = ttk.Label(librarian_tab, text='Surname')
+        self.Lsurname_label.grid(row=3, column=1, padx=10, pady=10, sticky='w')
+        self.Lsurname_entry = ttk.Entry(librarian_tab)
+        self.Lsurname_entry.grid(row=4, column=1, padx=10, pady=5, sticky='w')
 
-        self.email_label = ttk.Label(librarian_tab, text='Email')
-        self.email_label.grid(row=5, column=0, padx=10, pady=10, sticky='w')
-        self.email_entry = ttk.Entry(librarian_tab)
-        self.email_entry.grid(row=6, column=0, padx=10, pady=5, sticky='w')
+        self.Lemail_label = ttk.Label(librarian_tab, text='Email')
+        self.Lemail_label.grid(row=5, column=0, padx=10, pady=10, sticky='w')
+        self.Lemail_entry = ttk.Entry(librarian_tab)
+        self.Lemail_entry.grid(row=6, column=0, padx=10, pady=5, sticky='w')
 
-        self.address_label = ttk.Label(librarian_tab, text='Address')
-        self.address_label.grid(row=5, column=1, padx=10, pady=10, sticky='w')
-        self.address_entry = ttk.Entry(librarian_tab)
-        self.address_entry.grid(row=6, column=1, padx=10, pady=5, sticky='w')
+        self.Laddress_label = ttk.Label(librarian_tab, text='Address')
+        self.Laddress_label.grid(row=5, column=1, padx=10, pady=10, sticky='w')
+        self.Laddress_entry = ttk.Entry(librarian_tab)
+        self.Laddress_entry.grid(row=6, column=1, padx=10, pady=5, sticky='w')
 
         self.submit_button = ttk.Button(librarian_tab, text='Create', width=10, command=self.new_librarian_record)
         self.submit_button.grid(row=7, column=0, padx=5, pady=5, sticky='w')
 
 
     def new_librarian_record(self):
-        # Placeholder for the function to be defined later
-        print("Creating new librarian account")
+        password = self.librarianPass_entry.get()
+        first_name = self.Lfirstname_entry.get()
+        surname = self.Lsurname_entry.get()
+        email = self.Lemail_entry.get()
+        address = self.Laddress_entry.get()
+
+        print(password, first_name, surname, email, address)
+
+        database.new_librarian(self.conn, password, first_name, surname, email, address)
+
         self.new.destroy()
 
     def show_password_librarian(self, event):

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import NewAccUI
 import database
+import time
 
 class login_UI:
 
@@ -14,7 +15,7 @@ class login_UI:
         self.notebook = ttk.Notebook(login)
         self.notebook.pack(pady=0, expand=True, fill='both')
 
-        self.conn = database.connect_to_db('customers.db')
+        self.conn = database.connect_to_db('log_info.db')
 
         self.create_customer_tab()
         self.create_librarian_tab()
@@ -61,7 +62,10 @@ class login_UI:
             print("Customer login successful")
             self.login.destroy()
         else:
-            print("Customer login failed. Invalid ID or password.")
+            error_label = ttk.Label(self.login, text='Invalid ID or password', foreground='#FF0400', font=('Arial', 13))
+            error_label.pack(pady=5)
+            
+            self.login.after(7000, error_label.destroy)
 
     def close_connection(self):
         if self.conn:
@@ -90,14 +94,23 @@ class login_UI:
         self.show_pass_button.bind('<ButtonPress>', self.show_password_librarian)
         self.show_pass_button.bind('<ButtonRelease>', self.hide_password_librarian)
 
-        self.submit_button = ttk.Button(librarian_tab, text='Submit', width=10, command=self.submit_customer)
+        self.submit_button = ttk.Button(librarian_tab, text='Submit', width=10, command=self.submit_librarian)
         self.submit_button.pack(padx=5, pady=5)
 
     def submit_librarian(self):
-        # Placeholder for the function to be defined later
-        print("Submit button pressed for librarian")
-        self.login.destroy()
+        librarianID = self.librarianID_entry.get()
+        librarianPass = self.librarianPass_entry.get()
 
+        check = database.check_librarian_login(self.conn, librarianID, librarianPass)
+
+        if check:
+            print("Librarian login successful")
+            self.login.destroy()
+        else:
+            error_label = ttk.Label(self.login, text='Invalid ID or password', foreground='#FF0400', font=('Arial', 13))
+            error_label.pack(pady=5)
+            
+            self.login.after(7000, error_label.destroy)
 
     def show_password_librarian(self, event):
         self.librarianPass_entry.config(show='')
@@ -114,13 +127,13 @@ class login_UI:
         self.help_label = ttk.Label(help_tab, text='Unable to login?')
         self.help_label.pack(padx=10, pady=10)
         
-        self.create_account_button = ttk.Button(help_tab, text='Create a new Account', width=20, command=self.run_new_account)
+        self.create_account_button = ttk.Button(help_tab, text='Create a new Account', width=22, command=self.run_new_account)
         self.create_account_button.pack(padx=10, pady=10)
 
-        self.C_Reset_button = ttk.Button(help_tab, text='User Reset Password')
+        self.C_Reset_button = ttk.Button(help_tab, text='User Reset Password', width=22)
         self.C_Reset_button.pack(padx=10, pady=10)
 
-        self.L_Reset_button = ttk.Button(help_tab, text='Librarian Reset Password')
+        self.L_Reset_button = ttk.Button(help_tab, text='Librarian Reset Password', width=22)
         self.L_Reset_button.pack(padx=10, pady=10)
 
     def run_new_account(self):
