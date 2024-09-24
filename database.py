@@ -42,7 +42,7 @@ def generate_customer_id():
 # Function to insert a customer into the database
 def new_customer(conn, c_id, password, first_name, surname, email, address):
     cursor = conn.cursor()
-    customer_data = (c_id(), password, first_name, surname, email, address)
+    customer_data = (c_id, password, first_name, surname, email, address)
     
     cursor.execute('''
     INSERT INTO customers (id, password, first_name, surname, email, address)
