@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 import NewAccUI
 import database
-import time
 
 class login_UI:
 
