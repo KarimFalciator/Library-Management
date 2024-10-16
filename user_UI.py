@@ -26,6 +26,31 @@ class user_UI:
         home_tab = ttk.Frame(self.notebook, width=300, height=490)
         self.notebook.add(home_tab, text='Home')
 
+        columns = ('Name', 'Genre', 'Borrowed', 'Returned')
+        previous_books_tree = ttk.Treeview(home_tab, columns=columns, show='headings', height=2)
+
+    # Define headings
+
+        previous_books_tree.heading('Name', text='Name of Book')
+        previous_books_tree.heading('Genre', text='Genre')
+        previous_books_tree.heading('Borrowed', text='Borrowed')
+        previous_books_tree.heading('Returned', text='Returned')
+
+    # Define column widths
+
+        previous_books_tree.column('Name', width=170)
+        previous_books_tree.column('Genre', width=110)
+        previous_books_tree.column('Borrowed', width=110)
+        previous_books_tree.column('Returned', width=110)
+
+        previous_books_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5)
+
+    # Add a vertical scrollbar
+        scrollbar = ttk.Scrollbar(home_tab, orient='vertical', command=previous_books_tree.yview)
+        scrollbar.grid(row=5, column=5, sticky='ns')
+
+        previous_books_tree.configure(yscrollcommand=scrollbar.set)
+
 
 #  read tab -----------------------------------------------------------------
 

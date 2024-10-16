@@ -13,7 +13,7 @@ class CreateAccUI:
         self.notebook = ttk.Notebook(new)
         self.notebook.pack(pady=0, expand=True, fill='both')
 
-        self.conn = database.connect_to_db('log_info.db')
+        self.conn = database.connect_to_db('library.db')
 
         self.newAcc_customer_tab()
         self.newAcc_librarian_tab()

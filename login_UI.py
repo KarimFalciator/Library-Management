@@ -14,7 +14,7 @@ class login_UI:
         self.notebook = ttk.Notebook(login)
         self.notebook.pack(pady=0, expand=True, fill='both')
 
-        self.conn = database.connect_to_db('log_info.db')
+        self.conn = database.connect_to_db('library.db')
 
         self.create_customer_tab()
         self.create_librarian_tab()
