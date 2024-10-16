@@ -121,22 +121,15 @@ def create_books_table(conn):
     conn.commit()
 
 # Function to insert a customer into the database
-def new_book(conn, b_id, name, available):
+def new_book(conn, book_id, name, available):
     cursor = conn.cursor()
-    book_data = (b_id, name, available)
-    
-    if check_book(conn, b_id, name) == False:
-        cursor.execute('''
-        INSERT INTO books (book_id, book_name, available)
-        VALUES (?, ?, ?)
-        ''', book_data)
-        conn.commit()
+    cursor.execute("SELECT * FROM books WHERE book_id = ? AND book_name = ?", (book_id, name))
+    book = cursor.fetchone()
+    if book:
+        cursor.execute("UPDATE books SET available = available + 1 WHERE book_id = ? AND book_name = ?", (book_id, name))
     else:
-        available = available +1
-        cursor.execute('''
-        INSERT INTO books (book_id, book_name, available)
-        VALUES (?, ?, ?)
-        ''', b_id, name, available)
+        cursor.execute("INSERT INTO books (book_id, book_name, available) VALUES (?, ?, ?)", (book_id, name, available))
+    conn.commit()
 
 def check_book(conn, book_id, book_name):
     cursor = conn.cursor()
@@ -156,12 +149,12 @@ def main():
     create_books_table(conn)
 
     # Insert a customer (Example data)
-    new_book(conn, ' nome libro 1', ' av libro 1')
+    new_book(conn, 1,' nome libro 1', '1')
 
     # Close the connection
     close_connection(conn)
     print("nuovo libro creato")
 
-# # Run the program
-# if __name__ == "__main__":
-#     main()
+# Run the program
+if __name__ == "__main__":
+    main()
