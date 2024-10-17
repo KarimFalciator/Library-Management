@@ -13,71 +13,69 @@ def close_connection(conn):
 #customers table -----------------------------------------------------------------------------------------
 
 # Function to create the customer table
-def create_customer_table(conn):
+def create_students_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
-        password TEXT NOT NULL,
-        first_name TEXT NOT NULL,
-        surname TEXT NOT NULL,
+        s_id INTEGER PRIMARY KEY,
+        f_name TEXT NOT NULL,
+        s_name TEXT NOT NULL,
         email TEXT NOT NULL,
         address TEXT NOT NULL,
-        book_list TEXT NOT NULL DEFAULT '[]'
+        number TEXT NOT NULL
     )
     ''')
     conn.commit()
 
-# Function to generate a unique random 5-digit ID
-def generate_customer_id():
-    id = random.randint(10000, 99999)
-    while True:
-        conn = connect_to_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE id = ?", (id,))
-        if cursor.fetchone() is None:
-            break
-        id = random.randint(10000, 99999)
-    return id
+# # Function to generate a unique random 5-digit ID
+# def generate_user_id():
+#     id = random.randint(10000, 99999)
+#     while True:
+#         conn = connect_to_db()
+#         cursor = conn.cursor()
+#         cursor.execute("SELECT * FROM users WHERE id = ?", (id,))
+#         if cursor.fetchone() is None:
+#             break
+#         id = random.randint(10000, 99999)
+#     return id
 
 # Function to insert a customer into the database
-def new_customer(conn, c_id, password, first_name, surname, email, address):
+def new_user(conn, s_id, f_name, s_name, email, address, number):
     cursor = conn.cursor()
-    customer_data = (c_id, password, first_name, surname, email, address)
+    customer_data = (s_id, f_name, s_name, email, address, number)
     
     cursor.execute('''
-    INSERT INTO users (id, password, first_name, surname, email, address)
+    INSERT INTO students (s_id, f_name, s_name, email, address, number)
     VALUES (?, ?, ?, ?, ?, ?)
     ''', customer_data)
     conn.commit()
 
-def check_customer_login(conn, customer_id, password):
+def check_user_login(conn, s_id):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM users WHERE id = ? AND password = ?
-    ''', (customer_id, password))
+    SELECT * FROM students WHERE id = ? AND password = ?
+    ''', (s_id))
     return cursor.fetchone()
 
 
 #librarians table -----------------------------------------------------------------------------------------
 
-def create_librarian_table(conn):
+def create_teachers_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS librarians(
-        id INTEGER PRIMARY KEY,
-        password TEXT NOT NULL,
-        first_name TEXT NOT NULL,
-        surname TEXT NOT NULL,
+    CREATE TABLE IF NOT EXISTS teachers(
+        t_id INTEGER PRIMARY KEY,
+        t_password TEXT NOT NULL,
+        f_name TEXT NOT NULL,
+        s_name TEXT NOT NULL,
         email TEXT NOT NULL,
-        address TEXT NOT NULL
     )
     ''')
 
     conn.commit()
 
 # Function to generate a unique random 5-digit ID
-def generate_librarian_id():
+def generate_teacher_id():
     id = random.randint(10000, 99999)
     while True:
         conn = connect_to_db()
@@ -146,14 +144,10 @@ def main():
     conn = connect_to_db()
 
     # Create the customer table
-    create_books_table(conn)
-
-    # Insert a customer (Example data)
-    new_book(conn, 1,' nome libro 1', '1')
+    create_users_table(conn)
 
     # Close the connection
     close_connection(conn)
-    print("nuovo libro creato")
 
 # Run the program
 if __name__ == "__main__":
