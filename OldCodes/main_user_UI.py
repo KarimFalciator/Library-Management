@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import NewAccUI
-import database
+import OldCodes2.NewAccUI as NewAccUI
+import OldCodes2.database as database
 
 
 class login_UI:

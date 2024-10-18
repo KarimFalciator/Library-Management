@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import database
+import OldCodes2.database as database
 
 class CreateAccUI:
 

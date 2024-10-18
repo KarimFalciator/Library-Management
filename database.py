@@ -1,150 +1,222 @@
 import sqlite3
 import random
-
+from datetime import datetime, timedelta
 
 # Function to connect to the SQLite database
-def connect_to_db(db_name='library.db'):
-    return sqlite3.connect(db_name)
+def connect_to_db(db_name='lending.db'):
+    conn = sqlite3.connect(db_name)
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
 # Function to close the database connection
 def close_connection(conn):
     conn.close()
 
-#customers table -----------------------------------------------------------------------------------------
+# Students table -----------------------------------------------------------------------------------------
 
 # Function to create the customer table
 def create_students_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS students(
         s_id INTEGER PRIMARY KEY,
-        f_name TEXT NOT NULL,
-        s_name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        address TEXT NOT NULL,
-        number TEXT NOT NULL
+        s_fname TEXT NOT NULL,
+        s_lname TEXT NOT NULL,
+        s_email TEXT NOT NULL,
+        s_number TEXT NOT NULL
     )
     ''')
     conn.commit()
 
-# # Function to generate a unique random 5-digit ID
-# def generate_user_id():
-#     id = random.randint(10000, 99999)
-#     while True:
-#         conn = connect_to_db()
-#         cursor = conn.cursor()
-#         cursor.execute("SELECT * FROM users WHERE id = ?", (id,))
-#         if cursor.fetchone() is None:
-#             break
-#         id = random.randint(10000, 99999)
-#     return id
+# Function to generate a unique random 6-digit ID
+def generate_student_id():
+    s_id = random.randint(100000, 999999)
+    while True:
+        conn = connect_to_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM students WHERE s_id = ?", (s_id,))
+        if cursor.fetchone() is None:
+            break
+        s_id = random.randint(100000, 999999)
+    return s_id
 
-# Function to insert a customer into the database
-def new_user(conn, s_id, f_name, s_name, email, address, number):
+# Function to insert a student into the database
+def new_student(conn, s_fname, s_lname, s_email, s_number):
+    s_id = generate_student_id()
     cursor = conn.cursor()
-    customer_data = (s_id, f_name, s_name, email, address, number)
+    student_data = (s_id, s_fname, s_lname, s_email, s_number)
     
     cursor.execute('''
-    INSERT INTO students (s_id, f_name, s_name, email, address, number)
-    VALUES (?, ?, ?, ?, ?, ?)
-    ''', customer_data)
+    INSERT INTO students (s_id, s_fname, s_lname, s_email, s_number)
+    VALUES (?, ?, ?, ?, ?)
+    ''', student_data)
     conn.commit()
 
-def check_user_login(conn, s_id):
+# Function to check if a customer exists in the database
+def check_student(conn, s_id):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM students WHERE id = ? AND password = ?
-    ''', (s_id))
+    SELECT * FROM students WHERE s_id = ?
+    ''', (s_id,))
     return cursor.fetchone()
 
 
-#librarians table -----------------------------------------------------------------------------------------
+# Teachers table -----------------------------------------------------------------------------------------
 
+# Function to create the teachers table
 def create_teachers_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS teachers(
         t_id INTEGER PRIMARY KEY,
-        t_password TEXT NOT NULL,
-        f_name TEXT NOT NULL,
-        s_name TEXT NOT NULL,
-        email TEXT NOT NULL,
+        t_pass TEXT NOT NULL,
+        t_fname TEXT NOT NULL,
+        t_lname TEXT NOT NULL,
+        t_email TEXT NOT NULL
     )
     ''')
 
     conn.commit()
 
-# Function to generate a unique random 5-digit ID
+# Function to generate a unique random 6-digit ID
 def generate_teacher_id():
-    id = random.randint(10000, 99999)
+    t_id = random.randint(100000, 999999)
     while True:
         conn = connect_to_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM librarians WHERE id = ?", (id,))
+        cursor.execute("SELECT * FROM teachers WHERE t_id = ?", (t_id,))
         if cursor.fetchone() is None:
             break
-        id = random.randint(10000, 99999)
-    return id
+        t_id = random.randint(100000, 999999)
+    return t_id
 
-def new_librarian(conn, l_id, password, first_name, surname, email, address):
+def new_teacher(conn, t_pass, t_fname, t_lname, t_email):
+    t_id = generate_teacher_id()
     cursor = conn.cursor()
-    librarian_data = (l_id, password, first_name, surname, email, address)
+    t_data = (t_id, t_pass, t_fname, t_lname, t_email)
 
     cursor.execute('''
-    INSERT INTO librarians (id, password, first_name, surname, email, address)
-    VALUES (?, ?, ?, ?, ?, ?)
-    ''', librarian_data)
+    INSERT INTO teachers (t_id, t_pass, t_fname, t_lname, t_email)
+    VALUES (?, ?, ?, ?, ?)
+    ''', t_data)
     conn.commit()
 
-def check_librarian_login(conn, librarian_id, password):
+def check_teacher_login(conn, t_id, t_pass):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM librarians WHERE id = ? AND password = ?
-    ''', (librarian_id, password))
+    SELECT * FROM teachers WHERE t_id = ? AND t_pass = ?
+    ''', (t_id, t_pass))
     return cursor.fetchone()
 
-#books table -----------------------------------------------------------------------------------------
+# Resources table -----------------------------------------------------------------------------------------
 
-# Function to create the books table
-def create_books_table(conn):
+# Function to create the resources table
+def create_resources_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS books (
-        book_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        book_name TEXT NOT NULL,
-        available INTEGER NOT NULL,
-        user_list TEXT NOT NULL DEFAULT '[]'
+    CREATE TABLE IF NOT EXISTS resources (
+        r_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        r_name TEXT NOT NULL,
+        r_subject TEXT default NULL,
+        r_qty INTEGER default 1
     )
     ''')
     conn.commit()
 
-# Function to insert a customer into the database
-def new_book(conn, book_id, name, available):
+# Function to insert a resource into the database
+def new_resource(conn, r_name, r_qty=1):
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM books WHERE book_id = ? AND book_name = ?", (book_id, name))
-    book = cursor.fetchone()
-    if book:
-        cursor.execute("UPDATE books SET available = available + 1 WHERE book_id = ? AND book_name = ?", (book_id, name))
+    cursor.execute('''SELECT * FROM resources WHERE r_name = ?
+        ''', (r_name,))
+    resource = cursor.fetchone()
+    if resource:
+        cursor.execute('''UPDATE resources SET r_qty = r_qty + ? WHERE r_name = ?
+        ''', (r_qty, r_name))
     else:
-        cursor.execute("INSERT INTO books (book_id, book_name, available) VALUES (?, ?, ?)", (book_id, name, available))
+        cursor.execute('''INSERT INTO resources (r_name, r_qty) VALUES (?, ?)
+        ''', (r_name, r_qty))
     conn.commit()
 
-def check_book(conn, book_id, book_name):
+# Function to check if a resource exists in the database
+def check_resource(conn, r_id, r_name, r_qty):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM books WHERE book_id = ? AND book_name = ?
-    ''', (book_id, book_name))
+    SELECT * FROM resources WHERE r_id = ? AND r_name = ?
+    ''', (r_id, r_name))
+    resource = cursor.fetchone()
+    if resource and r_qty > 0:
+        return True
+    else:
+        return False
+
+
+# Borrowed table -----------------------------------------------------------------------------------------
+
+# Function to create the borrowed table
+def create_borrowed_table(conn):
+    cursor = conn.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS borrowed (
+        ref INTEGER PRIMARY KEY AUTOINCREMENT,
+        s_id INTEGER NOT NULL,
+        r_id INTEGER NOT NULL,
+        b_date TEXT NOT NULL,
+        d_date TEXT NOT NULL,
+        r_date TEXT DEFAULT NULL,
+        FOREIGN KEY (s_id) REFERENCES students(s_id),
+        FOREIGN KEY (r_id) REFERENCES resources(r_id)
+    )
+    ''')
+    conn.commit()
+
+# Function to insert a new borrowed resource into the database
+def new_borrowed(conn, s_id, r_id):
+    cursor = conn.cursor()
+    b_date = datetime.now().strftime("%Y-%m-%d")
+    d_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+    r_date = None
+    borrowed_data = (s_id, r_id, b_date, d_date, r_date)
+    
+    cursor.execute('''
+    INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date)
+    VALUES (?, ?, ?, ?, ?)
+    ''', borrowed_data)
+    conn.commit()
+
+# Function to return a borrowed resource
+def return_borrowed(conn, ref):
+    cursor = conn.cursor()
+    r_date = datetime.now().strftime('%D-%M-%Y')
+    cursor.execute('''
+    UPDATE borrowed SET r_date = ? WHERE ref = ?
+    ''', (r_date, ref))
+    conn.commit()
+
+# Function to check if a customer exists in the database
+def check_borrowed(conn, ref):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT * FROM students WHERE ref = ?
+    ''', (ref,))
     return cursor.fetchone()
 
 
-
-# # Main function to run the program
+# Main function to run the program
 def main():
     # Connect to the database
     conn = connect_to_db()
 
-    # Create the customer table
-    create_users_table(conn)
+    # Create the tables
+    # create_teachers_table(conn)
+    # create_students_table(conn)
+    # create_resources_table(conn)
+    # create_borrowed_table(conn)
+
+    # Insert a new record in every table
+    new_teacher(conn, 'password1', 'Nome1', 'Cognome1', 'email1')
+    new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
+    new_resource(conn, 'Materia1')
+    new_borrowed(conn, 147295, 1)
 
     # Close the connection
     close_connection(conn)
