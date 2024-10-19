@@ -129,6 +129,12 @@ def update_OTP(conn, t_id, OTP):
     ''', (OTP, t_id))
     conn.commit()
 
+def update_teacher_password(conn, t_id, t_pass):
+    cursor = conn.cursor()
+    cursor.execute('''
+    UPDATE teachers SET t_pass = ? WHERE t_id = ?
+    ''', (t_pass, t_id))
+
 # Resources table -----------------------------------------------------------------------------------------
 
 # Function to create the resources table

@@ -39,11 +39,6 @@ class CreateAccUI:
         self.t_email_entry = ttk.Entry(teacher_tab)
         self.t_email_entry.grid(row=3, column=0, padx=10, pady=5, sticky='w')
 
-        self.t_address_label = ttk.Label(teacher_tab, text='Address')
-        self.t_address_label.grid(row=2, column=1, padx=10, pady=10, sticky='w')
-        self.t_address_entry = ttk.Entry(teacher_tab)
-        self.t_address_entry.grid(row=3, column=1, padx=10, pady=5, sticky='w')
-
         self.teacherPass_label = ttk.Label(teacher_tab, text='Password')
         self.teacherPass_label.grid(row=4, column=0, padx=10, pady=5, sticky='w')
         self.teacherPass_entry = ttk.Entry(teacher_tab, show='•')
@@ -60,19 +55,24 @@ class CreateAccUI:
         self.t_showpass.bind('<ButtonPress>', self.show_password_teacher)
         self.t_showpass.bind('<ButtonRelease>', self.hide_password_teacher)
 
-        self.submit_button = ttk.Button(teacher_tab, text='Create', width=10, command=self.new_teacher_record)
+        self.submit_button = ttk.Button(teacher_tab, text='Create', width=10, command=self.compare_pass)
         self.submit_button.grid(row=6, column=0, padx=5, pady=5, sticky='w')
 
-
+    def compare_pass(self):
+        if self.teacherPass_entry.get() == self.t_passconfirm_entry.get() and self.teacherPass_entry.get() != '' and self.t_email_entry.get() != '' and self.t_fname_entry.get() != '' and self.t_lname_entry.get() != '':
+            self.new_teacher_record()
+        else:
+            self.worng_pass_label = ttk.Label(self.new, text='Passwords do not match or a field is empty', foreground='red')
+            self.worng_pass_label.pack(pady=10)
+    
     def new_teacher_record(self):
         t_id = database.generate_teacher_id()
         t_pass = self.teacherPass_entry.get()
         t_fname = self.t_fname_entry.get()
         t_lname = self.t_lname_entry.get()
         t_email = self.t_email_entry.get()
-        t_address = self.t_address_entry.get()
 
-        database.new_teacher(self.conn, t_pass, t_fname, t_lname, t_email)
+        database.new_teacher(self.conn, t_id, t_pass, t_fname, t_lname, t_email)
 
         self.new.destroy()
 
