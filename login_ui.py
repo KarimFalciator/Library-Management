@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk
 import database
+import reset_password
 
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
@@ -94,7 +95,7 @@ class login_UI:
         self.help_label.pack(padx=10, pady=10)
         
     def reset_teacher_password(self):
-        pass
+        reset_password.reset_password()
 
 if __name__ == "__main__":  # for testing
     login = ctk.CTk()

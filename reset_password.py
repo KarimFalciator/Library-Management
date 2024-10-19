@@ -2,8 +2,9 @@ import customtkinter as ctk
 from tkinter import ttk
 import database
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from email.message import EmailMessage
+import random
+import string
 
 class reset_password_UI:
 
@@ -30,7 +31,7 @@ class reset_password_UI:
 
         # Add customtkinter styled frames as tabs
         self.create_teacher_tab()
-        self.create_students_tab()
+        self.create_otp_tab()
     
     def create_teacher_tab(self):
         teacher_tab = ctk.CTkFrame(self.notebook, width=300, height=400)
@@ -52,71 +53,80 @@ class reset_password_UI:
     def submit_t_email(self):
         t_id = self.teacherID_entry.get()
         t_email = self.teacher_email_entry.get()
-        print(t_id)
-        print(t_email)
 
         teacher = database.check_t_email(self.conn, t_id, t_email)
 
         if teacher:
-            self.send_t_email(t_email)
+            self.otp = self.generate_otp()
+            self.send_t_email(t_id, t_email, self.otp)
             success_label = ctk.CTkLabel(self.reset, text='Reset Successful', text_color='#009B0F', font=('Arial', 13))
             success_label.pack(pady=5)
             self.reset.after(3500, self.reset.destroy)
+            self.create_otp_tab()
         else:
             error_label = ctk.CTkLabel(self.reset, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
             self.reset.after(7000, error_label.destroy)
 
-    def send_t_email(self, receiver_email):
+    def generate_otp(self):
+        otp = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        return otp
+
+    def send_t_email(self, t_id, receiver_email, otp):
         sender_email = "karimfalciator@gmail.com"  # Your email address
-        sender_password = "Lepassword1"  # Your email password
-        receiver_email = "karimfalciator@gmail.com" # The email address you want to send the email to
+        sender_password = "iveu rkbv tlwl edzc"  # Your email password
+                
+        database.update_teacher_otp(self.conn, t_id, otp)
 
-        # Create the email subject and body
-        subject = "Reset Password Request"
-        body = "This is a test email sent from Python!"
+        # Create the email message
+        # Set up the server
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
 
-        # Create the email
-        msg = MIMEMultipart()
+        # login to the server
+        server.login(sender_email, sender_password)
+
+        # Create the email message
+        msg = EmailMessage()
+        msg['Subject'] = 'Your OTP'
         msg['From'] = sender_email
         msg['To'] = receiver_email
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
 
-        try:
-            # Connect to the Gmail SMTP server
-            server = smtplib.SMTP('smtp.gmail.com', 587)  # Use Gmail's SMTP server
-            server.starttls()  # Upgrade the connection to secure
-            server.login(sender_email, sender_password)  # Log in to your account
-            server.send_message(msg)  # Send the email
-            print("Email sent successfully!")
-        except Exception as e:
-            print(f"Error sending email: {e}")
-        finally:
-            server.quit()
+        # write the OTP in the email message
+        msg.set_content(f'Your OTP is {otp}')
+
+        # Send the email
+        server.send_message(msg)
+        print('Message sent')
 
         
-    def create_students_tab(self):
-        student_tab = ctk.CTkFrame(self.notebook, width=300, height=400)
-        self.notebook.add(student_tab, text='Student')
+    def create_otp_tab(self):
+        otp_tab = ctk.CTkFrame(self.notebook, width=300, height=400)
+        self.notebook.add(otp_tab, text='OTP Verification')
 
-        self.studentID_label = ctk.CTkLabel(student_tab, text='Student ID')
-        self.studentID_label.pack(padx=10, pady=10)
-        self.studentID_entry = ctk.CTkEntry(student_tab)
-        self.studentID_entry.pack(padx=10, pady=5)
+        self.otp_label = ctk.CTkLabel(otp_tab, text='confirm otp sent by email')
+        self.otp_label.pack(padx=10, pady=10)
+        self.otp_entry = ctk.CTkEntry(otp_tab)
+        self.otp_entry.pack(padx=10, pady=5)
 
-        self.student_email_label = ctk.CTkLabel(student_tab, text='Email')
-        self.student_email_label.pack(padx=10, pady=5)
-        self.student_email_entry = ctk.CTkEntry(student_tab)
-        self.student_email_entry.pack(padx=10, pady=5)
-
-        self.submit_button = ctk.CTkButton(student_tab, text='Submit', width=10, command=lambda: self.submit_s_email())
+        self.submit_button = ctk.CTkButton(otp_tab, text='Submit', width=10, command=lambda: self.verify_otp)
         self.submit_button.pack(padx=5, pady=5)
 
-    def submit_s_email(self):
-        teacherID = self.teacherID_entry.get()
-        email = self.teacher_email_entry.get()
-        database.send_reset_email(self.conn, teacherID, email)
+    def verify_otp(self):
+        entered_otp = self.otp_entry.get()
+        if entered_otp == self.otp:
+            self.create_new_window()
+        else:
+            error_label = ctk.CTkLabel(self.notebook, text='Invalid OTP', text_color='#FF0400', font=('Arial', 13))
+            error_label.pack(pady=5)
+            self.after(7000, error_label.destroy)
+
+    def create_new_window(self):
+        new_window = ctk.CTkToplevel(self)
+        new_window.title("New Window")
+        new_window.geometry("300x200")
+        label = ctk.CTkLabel(new_window, text="OTP Verified! Welcome to the new window.")
+        label.pack(padx=10, pady=10)
 
 if __name__ == "__main__":  # for testing
     reset = ctk.CTk()
