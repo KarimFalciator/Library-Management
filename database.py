@@ -90,8 +90,7 @@ def generate_teacher_id():
         t_id = random.randint(100000, 999999)
     return t_id
 
-def new_teacher(conn, t_pass, t_fname, t_lname, t_email):
-    t_id = generate_teacher_id()
+def new_teacher(conn, t_id, t_pass, t_fname, t_lname, t_email):
     cursor = conn.cursor()
     t_data = (t_id, t_pass, t_fname, t_lname, t_email)
 
