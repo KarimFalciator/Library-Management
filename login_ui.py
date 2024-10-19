@@ -95,12 +95,13 @@ class login_UI:
         self.help_label.pack(padx=10, pady=10)
         
     def reset_teacher_password(self):
+        self.login.destroy()
         reset_window = ctk.CTkToplevel()  # Create a Toplevel window for reset password
         ctk.set_appearance_mode("System")  # Keep the same appearance mode
         ctk.set_default_color_theme("blue")  # Keep the same color theme
         reset_password.reset_password_UI(reset_window)  # Pass the new window to the reset password UI
 
-        
+
 if __name__ == "__main__":  # for testing
     login = ctk.CTk()
     log = login_UI(login)

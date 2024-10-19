@@ -137,12 +137,12 @@ class reset_password_UI:
         new_password = self.pass_entry.get()
         confirm_password = self.passconfirm_entry.get()
 
-        if new_password == confirm_password:
+        if new_password == confirm_password and new_password != '':
             database.update_teacher_password(self.conn, t_id, new_password)
             self.success_label = ctk.CTkLabel(self.reset, text='Password Reset Successful', text_color='#009B0F', font=('Arial', 13))
             self.success_label.pack(pady=5)
             self.reset.after(3500, self.success_label.destroy)
-            self.reset_window.destroy()
+            self.reset.destroy()
         else:
             error_label = ctk.CTkLabel(self.reset, text='Passwords do not match', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
