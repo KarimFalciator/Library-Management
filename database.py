@@ -60,6 +60,13 @@ def check_student(conn, s_id):
     ''', (s_id,))
     return cursor.fetchone()
 
+def check_s_email(conn, s_id, s_email):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT * FROM students WHERE s_id = ? AND s_email = ?
+    ''', (s_id, s_email,))
+    return cursor.fetchone()
+
 
 # Teachers table -----------------------------------------------------------------------------------------
 
@@ -105,6 +112,13 @@ def check_teacher_login(conn, t_id, t_pass):
     cursor.execute('''
     SELECT * FROM teachers WHERE t_id = ? AND t_pass = ?
     ''', (t_id, t_pass))
+    return cursor.fetchone()
+
+def check_t_email(conn, t_id, t_email):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT * FROM teachers WHERE t_id = ? AND t_email = ?
+    ''', (t_id, t_email,))
     return cursor.fetchone()
 
 # Resources table -----------------------------------------------------------------------------------------
