@@ -79,8 +79,7 @@ def create_teachers_table(conn):
         t_pass TEXT NOT NULL,
         t_fname TEXT NOT NULL,
         t_lname TEXT NOT NULL,
-        t_email TEXT NOT NULL,
-        t_OTP TEXT default NULL
+        t_email TEXT NOT NULL
     )
     ''')
 
