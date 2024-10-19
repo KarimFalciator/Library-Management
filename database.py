@@ -117,8 +117,8 @@ def check_teacher_login(conn, t_id, t_pass):
 def check_t_email(conn, t_id, t_email):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM teachers WHERE t_id = ? AND t_email = ?
-    ''', (t_id, t_email,))
+    SELECT * FROM teachers WHERE t_id= ? AND t_email= ?
+    ''', (t_id, t_email))
     return cursor.fetchone()
 
 # Resources table -----------------------------------------------------------------------------------------
@@ -215,25 +215,25 @@ def check_borrowed(conn, ref):
 
 
 # Main function to run the program
-def main():
-    # Connect to the database
-    conn = connect_to_db()
+# def main():
+#     # Connect to the database
+#     conn = connect_to_db()
 
-    # Create the tables
-    # create_teachers_table(conn)
-    # create_students_table(conn)
-    # create_resources_table(conn)
-    # create_borrowed_table(conn)
+#     Create the tables
+#     create_teachers_table(conn)
+#     create_students_table(conn)
+#     create_resources_table(conn)
+#     create_borrowed_table(conn)
 
-    # Insert a new record in every table
-    new_teacher(conn, 'password1', 'Nome1', 'Cognome1', 'email1')
-    new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
-    new_resource(conn, 'Materia1')
-    new_borrowed(conn, 147295, 1)
+#     Insert a new record in every table
+#     new_teacher(conn, 'password1', 'Nome1', 'Cognome1', 'email1')
+#     new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
+#     new_resource(conn, 'Materia1')
+#     new_borrowed(conn, 147295, 1)
 
-    # Close the connection
-    close_connection(conn)
+#     # Close the connection
+#     close_connection(conn)
 
-# Run the program
-if __name__ == "__main__":
-    main()
+# # Run the program
+# if __name__ == "__main__":
+#     main()

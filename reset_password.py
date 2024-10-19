@@ -41,37 +41,39 @@ class reset_password_UI:
         self.teacherID_entry = ctk.CTkEntry(teacher_tab)
         self.teacherID_entry.pack(padx=10, pady=5)
 
-        self.student_email_label = ctk.CTkLabel(teacher_tab, text='Email')
-        self.student_email_label.pack(padx=10, pady=5)
-        self.student_email_entry = ctk.CTkEntry(teacher_tab)
-        self.student_email_entry.pack(padx=10, pady=5)
+        self.teacher_email_label = ctk.CTkLabel(teacher_tab, text='Email')
+        self.teacher_email_label.pack(padx=10, pady=5)
+        self.teacher_email_entry = ctk.CTkEntry(teacher_tab)
+        self.teacher_email_entry.pack(padx=10, pady=5)
 
         self.submit_button = ctk.CTkButton(teacher_tab, text='Send Email', width=10, command=lambda: self.submit_t_email())
         self.submit_button.pack(padx=5, pady=5)
 
     def submit_t_email(self):
-        t_ID = self.teacherID_entry.get()
-        t_email = self.student_email_entry.get()
+        t_id = self.teacherID_entry.get()
+        t_email = self.teacher_email_entry.get()
+        print(t_id)
+        print(t_email)
 
-        teacher = database.check_t_email(self.conn, t_ID, t_email)
+        teacher = database.check_t_email(self.conn, t_id, t_email)
 
         if teacher:
-            send_t_email = send_t_email()
-            success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=('Arial', 13))
+            self.send_t_email(t_email)
+            success_label = ctk.CTkLabel(self.reset, text='Reset Successful', text_color='#009B0F', font=('Arial', 13))
             success_label.pack(pady=5)
-            self.login.after(3500, self.login.destroy)
+            self.reset.after(3500, self.reset.destroy)
         else:
-            error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
+            error_label = ctk.CTkLabel(self.reset, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
-            self.login.after(7000, error_label.destroy)
+            self.reset.after(7000, error_label.destroy)
 
-    def send_t_email(self):
+    def send_t_email(self, receiver_email):
         sender_email = "karimfalciator@gmail.com"  # Your email address
         sender_password = "Lepassword1"  # Your email password
-        receiver_email = "karimfalciator@example.com"  # Recipient's email address
+        receiver_email = "karimfalciator@gmail.com" # The email address you want to send the email to
 
         # Create the email subject and body
-        subject = "Test Reset Password Email"
+        subject = "Reset Password Request"
         body = "This is a test email sent from Python!"
 
         # Create the email
@@ -89,7 +91,9 @@ class reset_password_UI:
             server.send_message(msg)  # Send the email
             print("Email sent successfully!")
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error sending email: {e}")
+        finally:
+            server.quit()
 
         
     def create_students_tab(self):
@@ -111,7 +115,7 @@ class reset_password_UI:
 
     def submit_s_email(self):
         teacherID = self.teacherID_entry.get()
-        email = self.student_email_entry.get()
+        email = self.teacher_email_entry.get()
         database.send_reset_email(self.conn, teacherID, email)
 
 if __name__ == "__main__":  # for testing
