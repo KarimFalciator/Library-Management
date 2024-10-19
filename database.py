@@ -121,12 +121,12 @@ def check_t_email(conn, t_id, t_email):
     ''', (t_id, t_email))
     return cursor.fetchone()
 
-def update_OTP(conn, t_id, OTP):
-    cursor = conn.cursor()
-    cursor.execute('''
-    UPDATE teachers SET t_OTP = ? WHERE t_id = ?
-    ''', (OTP, t_id))
-    conn.commit()
+# def update_OTP(conn, t_id, OTP):
+#     cursor = conn.cursor()
+#     cursor.execute('''
+#     UPDATE teachers SET t_OTP = ? WHERE t_id = ?
+#     ''', (OTP, t_id))
+#     conn.commit()
 
 def update_teacher_password(conn, t_id, t_pass):
     cursor = conn.cursor()
@@ -228,25 +228,25 @@ def check_borrowed(conn, ref):
 
 
 # Main function to run the program
-def main():
-    # Connect to the database
-    conn = connect_to_db()
+# def main():
+#     # Connect to the database
+#     conn = connect_to_db()
 
-    # Create the tables
-    create_teachers_table(conn)
-    create_students_table(conn)
-    create_resources_table(conn)
-    create_borrowed_table(conn)
+#     # Create the tables
+#     create_teachers_table(conn)
+#     create_students_table(conn)
+#     create_resources_table(conn)
+#     create_borrowed_table(conn)
 
     # Insert a new record in every table
-    new_teacher(conn, 111111, 'password1', 'Nome1', 'Cognome1', 'karimfalciator@gmail.com')
+    # new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
     # new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
     # new_resource(conn, 'Materia1')
     # new_borrowed(conn, 147295, 1)
 
     # Close the connection
-    close_connection(conn)
+    # close_connection(conn)
 
 # Run the program
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

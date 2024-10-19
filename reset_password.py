@@ -74,8 +74,6 @@ class reset_password_UI:
     def send_t_email(self, t_id, receiver_email, otp):
         sender_email = "karimfalciator@gmail.com"  # Your email address
         sender_password = "iveu rkbv tlwl edzc"  # Your email password
-                
-        database.update_OTP(self.conn, t_id, otp)
 
         # Create the email message
         # Set up the server
@@ -115,7 +113,6 @@ class reset_password_UI:
         entered_otp = self.otp_entry.get()
         if entered_otp == self.otp:
             self.reset_pass_window()
-            
         else:
             error_label = ctk.CTkLabel(self.notebook, text='Invalid OTP', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
