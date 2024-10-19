@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk
 
 ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("custom_theme.json")
+ctk.set_default_color_theme("blue")
 
 class login_UI:
 
@@ -43,35 +43,39 @@ class login_UI:
         self.teacherPass_entry = ctk.CTkEntry(teacher_tab, show='•')
         self.teacherPass_entry.pack(padx=10, pady=5)
 
-        self.show_pass_button = ctk.CTkButton(teacher_tab, text='👁', width=4)
+        # Use the button for holding password visibility
+        self.show_pass_button = ctk.CTkButton(teacher_tab, text='👁', width=4, command=lambda: self.toggle_password(True))
         self.show_pass_button.pack(padx=5, pady=5)
+        
+        # Bind <ButtonRelease-1> to hide the password
+        self.show_pass_button.bind('<ButtonRelease-1>', lambda event: self.toggle_password(False))
 
-        self.show_pass_button.bind('<ButtonPress>', self.show_password_teacher)
-        self.show_pass_button.bind('<ButtonRelease>', self.hide_password_teacher)
-
-        self.submit_button = ctk.CTkButton(teacher_tab, text='Submit', width=10, command=self.submit_teacher)
+        self.submit_button = ctk.CTkButton(teacher_tab, text='Submit', width=10, command=lambda: self.submit_teacher())
         self.submit_button.pack(padx=5, pady=5)
 
     def submit_teacher(self):
         teacherID = self.teacherID_entry.get()
         teacherPass = self.teacherPass_entry.get()
 
-        check = True  # Placeholder for actual login logic
+        check = False  # Placeholder for actual login logic
+        print(1)
 
         if check:
-            success_label = ctk.CTkLabel(self.login, text='Login Successful', foreground='#009B0F', font=('Arial', 13))
+            success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=('Arial', 13))
             success_label.pack(pady=5)
             self.login.after(3500, self.login.destroy)
+            print(2)
         else:
-            error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', foreground='#FF0400', font=('Arial', 13))
+            error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
             self.login.after(7000, error_label.destroy)
+            print(3)
 
-    def show_password_teacher(self, event):
-        self.teacherPass_entry.configure(show='')
-
-    def hide_password_teacher(self, event):
-        self.teacherPass_entry.configure(show='•')
+    def toggle_password(self, show):
+        if show:
+            self.teacherPass_entry.configure(show='')  # Show password
+        else:
+            self.teacherPass_entry.configure(show='•')  # Hide password
 
     def create_help_tab(self):
         help_tab = ctk.CTkFrame(self.notebook, width=300, height=400)
@@ -80,19 +84,15 @@ class login_UI:
         self.help_label = ctk.CTkLabel(help_tab, text="help")
         self.help_label.pack(padx=20, pady=20)
 
-		# help combo box
-        self.help_optionmenu = ctk.CTkOptionMenu(help_tab, values=["Student", "Working Professional"])
-        self.help_optionmenu.pack(padx=20, pady=20)
+		# # help combo box KEEP FOR CREATE ACCOUNT/NEW BORROWED
+        # self.help_optionmenu = ctk.CTkOptionMenu(help_tab, values=["Student", "Working Professional"])
+        # self.help_optionmenu.pack(padx=20, pady=20)
 
+        self.help_label = ctk.CTkLabel(help_tab, text='Unable to login?')
+        self.help_label.pack(padx=10, pady=10)
 
-        # self.help_label = ctk.CTkLabel(help_tab, text='Unable to login?')
-        # self.help_label.pack(padx=10, pady=10)
-
-        # self.create_account_button = ctk.CTkButton(help_tab, text='Create a new Account', width=22)
-        # self.create_account_button.pack(padx=10, pady=10)
-
-        # self.t_Reset_button = ctk.CTkButton(help_tab, text='Teacher Reset Password', width=22)
-        # self.t_Reset_button.pack(padx=10, pady=10)
+        self.t_Reset_button = ctk.CTkButton(help_tab, text='Teacher Reset Password', width=22, command=self.reset_teacher)
+        self.t_Reset_button.pack(padx=10, pady=10)
 
 if __name__ == "__main__":  # for testing
     login = ctk.CTk()
