@@ -87,11 +87,14 @@ class login_UI:
         self.help_label = ctk.CTkLabel(help_tab, text='Unable to login?')
         self.help_label.pack(padx=10, pady=10)
 
-        self.t_Reset_button = ctk.CTkButton(help_tab, text='Teacher Reset Password', width=22, command=self.reset_teacher)
+        self.t_Reset_button = ctk.CTkButton(help_tab, text='Teacher Reset Password', width=22, command=self.reset_teacher_password)
         self.t_Reset_button.pack(padx=10, pady=10)
 
         self.help_label = ctk.CTkLabel(help_tab, text='Contact us at b34226@sfc.potteries.ac.uk')
         self.help_label.pack(padx=10, pady=10)
+        
+    def reset_teacher_password(self):
+        pass
 
 if __name__ == "__main__":  # for testing
     login = ctk.CTk()
