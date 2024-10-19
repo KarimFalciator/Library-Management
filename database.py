@@ -133,6 +133,7 @@ def update_teacher_password(conn, t_id, t_pass):
     cursor.execute('''
     UPDATE teachers SET t_pass = ? WHERE t_id = ?
     ''', (t_pass, t_id))
+    conn.commit()
 
 # Resources table -----------------------------------------------------------------------------------------
 

@@ -137,21 +137,23 @@ class reset_password_UI:
         self.submit_button.pack(padx=5, pady=5)
 
     def reset_password(self):
+        t_id = self.teacherID_entry.get()
         new_password = self.pass_entry.get()
         confirm_password = self.passconfirm_entry.get()
         if new_password == confirm_password:
-            database.update_teacher_password(self.conn, self.teacherID_entry.get(), new_password)
+            database.update_teacher_password(self.conn, t_id, new_password)
             self.success_label = ctk.CTkLabel(self.reset, text='Password Reset Successful', text_color='#009B0F', font=('Arial', 13))
             self.success_label.pack(pady=5)
             self.reset.after(3500, self.success_label.destroy)
+            self.reset_window.destroy()
         else:
             error_label = ctk.CTkLabel(self.reset, text='Passwords do not match', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
             self.reset.after(7000, error_label.destroy)
 
 
-# if __name__ == "__main__":  # for testing
-#     reset = ctk.CTk()
-#     log = reset_password_UI(reset)
-#     reset.mainloop()
+if __name__ == "__main__":  # for testing
+    reset = ctk.CTk()
+    log = reset_password_UI(reset)
+    reset.mainloop()
     
