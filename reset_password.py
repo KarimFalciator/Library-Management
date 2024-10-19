@@ -153,8 +153,8 @@ class reset_password_UI:
             self.reset.after(7000, error_label.destroy)
 
 
-if __name__ == "__main__":  # for testing
-    reset = ctk.CTk()
-    log = reset_password_UI(reset)
-    reset.mainloop()
+# if __name__ == "__main__":  # for testing
+#     reset = ctk.CTk()
+#     log = reset_password_UI(reset)
+#     reset.mainloop()
     

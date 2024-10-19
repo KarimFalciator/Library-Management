@@ -3,9 +3,6 @@ from tkinter import ttk
 import database
 import reset_password
 
-ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("blue")
-
 class login_UI:
 
     def __init__(self, login):
@@ -13,6 +10,9 @@ class login_UI:
         self.login.title('Login')
         self.login.geometry('300x400')
         self.login.resizable(False, False)
+
+        ctk.set_appearance_mode("System")
+        ctk.set_default_color_theme("blue")
 
         self.conn = database.connect_to_db('lending.db')
 
@@ -96,7 +96,7 @@ class login_UI:
         
     def reset_teacher_password(self):
         reset = ctk.CTk()
-        reset_password.reset_password_UI()
+        reset_password.reset_password_UI(reset)
         reset.mainloop()
 
 if __name__ == "__main__":  # for testing
