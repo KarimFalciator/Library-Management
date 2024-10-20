@@ -198,17 +198,24 @@ def create_borrowed_table(conn):
 
 # Function to insert a new borrowed resource into the database
 def new_borrowed(conn, s_id, r_id):
+    conn = conn
+    r_id = r_id
     cursor = conn.cursor()
     b_date = datetime.now().strftime("%Y-%m-%d")
     d_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
     r_date = None
     borrowed_data = (s_id, r_id, b_date, d_date, r_date)
     
-    cursor.execute('''
-    INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date)
-    VALUES (?, ?, ?, ?, ?)
-    ''', borrowed_data)
-    conn.commit()
+    if check_resource(conn, r_id):
+        cursor.execute('''
+        INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date)
+        VALUES (?, ?, ?, ?, ?)
+        ''', borrowed_data)
+        conn.commit()
+        return True
+    else:
+        return False
+
 
 # Function to return a borrowed resource
 def return_borrowed(conn, ref):
@@ -229,25 +236,25 @@ def check_borrowed(conn, ref):
 
 
 # Main function to run the program
-# def main():
-#     # Connect to the database
-#     conn = connect_to_db()
+def main():
+    # Connect to the database
+    conn = connect_to_db()
 
-#     # Create the tables
-#     create_teachers_table(conn)
-#     create_students_table(conn)
-#     create_resources_table(conn)
-#     create_borrowed_table(conn)
+    # Create the tables
+    create_teachers_table(conn)
+    create_students_table(conn)
+    create_resources_table(conn)
+    create_borrowed_table(conn)
 
     # Insert a new record in every table
     # new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
-    # new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
-    # new_resource(conn, 'Materia1')
-    # new_borrowed(conn, 147295, 1)
+    new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
+    new_resource(conn, 'Libro A', 5)
+    new_borrowed(conn, 147295, 1)
 
     # Close the connection
-    # close_connection(conn)
+    close_connection(conn)
 
 # Run the program
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
