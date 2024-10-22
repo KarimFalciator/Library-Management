@@ -211,8 +211,6 @@ def create_borrowed_table(conn):
 
 # Function to insert a new borrowed resource into the database
 def new_borrowed(conn, s_id, r_id):
-    conn = conn
-    r_id = r_id
     cursor = conn.cursor()
     b_date = datetime.now().strftime("%Y-%m-%d")
     d_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')

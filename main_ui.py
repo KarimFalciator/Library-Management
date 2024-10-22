@@ -82,6 +82,9 @@ class main_UI:
 
             # Insert into Treeview
             self.current_tree.insert('', '0', values=(ref, h_s_id, h_r_id, borrowed_date, returned_date, 'None'))
+            print(f"Inserted into Treeview: {ref}, {h_s_id}, {h_r_id}, {borrowed_date}, {returned_date}, None")
+        else:
+            print('Resource not available or Student not found')
 
         # Clear the entry fields
         self.h_s_id_entry.delete(0, 'end')
