@@ -165,12 +165,13 @@ def new_resource(conn, r_name, r_qty=1):
     conn.commit()
 
 # Function to check if a resource exists in the database
-def check_resource(conn, r_id, r_name, r_qty):
+def check_resource(conn, r_id):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM resources WHERE r_id = ? AND r_name = ?
-    ''', (r_id, r_name))
+    SELECT * FROM resources WHERE r_id = ?
+    ''', (r_id,))
     resource = cursor.fetchone()
+    r_qty = resource[3]
     if resource and r_qty > 0:
         return True
     else:
@@ -226,6 +227,12 @@ def return_borrowed(conn, ref):
     ''', (r_date, ref))
     conn.commit()
 
+# Function to get all borrowed resources
+def get_all_borrowed(conn):
+    cursor = conn.cursor()
+    cursor.execute('SELECT ref, s_id, r_id, b_date, d_date, r_date FROM borrowed')
+    return cursor.fetchall()
+
 # Function to check if a customer exists in the database
 def check_borrowed(conn, ref):
     cursor = conn.cursor()
@@ -254,9 +261,9 @@ def main():
 
     # Insert a new record in every table
     # new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
-    new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
-    new_resource(conn, 'Libro A', 5)
-    new_borrowed(conn, 147295, 1)
+    # new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
+    new_resource(conn, '111111')
+    new_borrowed(conn, 376594, 1)
 
     # Close the connection
     close_connection(conn)

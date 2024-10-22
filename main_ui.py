@@ -21,6 +21,7 @@ class main_UI:
         self.create_resource_list_tab()
         self.create_settings_tab()
         self.create_help_tab()
+        self.add_borrowed_from_db()
 
     # home tab ---------------------------------------------------------------
     
@@ -76,12 +77,23 @@ class main_UI:
         returned_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
         ref = database.get_last_ref(self.conn) + 1
 
-        # Insert into Treeview
-        self.current_tree.insert('', '0', values=(ref, h_s_id, h_r_id, borrowed_date, returned_date, 'None'))
+        if database.check_resource(self.conn, h_r_id) and database.check_student(self.conn, h_s_id):
+            database.new_borrowed(self.conn, h_s_id, h_r_id)
+
+            # Insert into Treeview
+            self.current_tree.insert('', '0', values=(ref, h_s_id, h_r_id, borrowed_date, returned_date, 'None'))
 
         # Clear the entry fields
         self.h_s_id_entry.delete(0, 'end')
         self.h_r_id_entry.delete(0, 'end')
+
+    def add_borrowed_from_db(self):
+        # Fetch all borrowed records from the database
+        borrowed_records = database.get_all_borrowed(self.conn)
+
+        # Insert each borrowed record into the Treeview
+        for record in borrowed_records:
+            self.current_tree.insert('', 'end', values=record)
 
 
     #  read tab -----------------------------------------------------------------
@@ -185,3 +197,4 @@ if __name__ == "__main__":  # for testing
 
 
 # nuova funzione per aggiungere un tutte le borrowed che sono nel database al treeview della home quando si apre il programma
+# fare in modo che la fuzion eper aggiungere un borrowed al database chiami solo il borrowed non ritornati
