@@ -77,7 +77,7 @@ class main_UI:
         returned_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
         ref = database.get_last_ref(self.conn) + 1
 
-        if database.check_resource(self.conn, h_r_id) and database.check_student(self.conn, h_s_id):
+        if database.check_resource_quantity(self.conn, h_r_id) and database.check_student(self.conn, h_s_id):
             database.new_borrowed(self.conn, h_s_id, h_r_id)
 
             # Insert into Treeview

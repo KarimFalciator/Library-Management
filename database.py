@@ -176,6 +176,18 @@ def check_resource(conn, r_id):
         return True
     else:
         return False
+    
+def check_resource_quantity(conn, r_id):
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM resources WHERE id=?
+    ''', (r_id,))
+    resource = cursor.fetchone()
+
+    if resource is None:
+        return False  # Resource not found
+
+    r_qty = resource[3]  # Assuming the quantity is at index 3
+    return r_qty > 0  # Return True if the quantity is available, otherwise False
 
 
 # Borrowed table -----------------------------------------------------------------------------------------
