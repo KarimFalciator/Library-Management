@@ -179,7 +179,7 @@ def check_resource(conn, r_id):
     
 def check_resource_quantity(conn, r_id):
     cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM resources WHERE id=?
+    cursor.execute('''SELECT * FROM resources WHERE r_id=?
     ''', (r_id,))
     resource = cursor.fetchone()
 
