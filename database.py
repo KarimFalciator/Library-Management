@@ -234,6 +234,12 @@ def check_borrowed(conn, ref):
     ''', (ref,))
     return cursor.fetchone()
 
+# Function to get the last ref from borrowed table
+def get_last_ref(conn):
+    cursor = conn.cursor()
+    cursor.execute('SELECT MAX(ref) FROM borrowed')
+    return cursor.fetchone()[0]
+
 
 # Main function to run the program
 def main():
