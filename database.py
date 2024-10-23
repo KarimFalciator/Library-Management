@@ -35,7 +35,7 @@ def generate_student_id():
         conn = connect_to_db()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM students WHERE s_id = ?", (s_id,))
-        if cursor.fetchone() is None:
+        if cursor.fetchone() is None or cursor.count ==  899999:
             break
         s_id = random.randint(100000, 999999)
     return s_id
@@ -143,33 +143,35 @@ def create_resources_table(conn):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS resources (
         r_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        r_name TEXT NOT NULL,
-        r_subject TEXT default NULL,
-        r_qty INTEGER default 1
+        r_type TEXT NOT NULL,
+        r_des TEXT default NULL,
+        r_qty INTEGER default NOT NULL,
+        t_id INTEGER NOT NULL,
+        FOREIGN KEY (t_id) REFERENCES teachers(t_id)
     )
     ''')
     conn.commit()
 
 # Function to insert a resource into the database
-def new_resource(conn, r_name, r_qty=1):
+def new_resource(conn, r_type, r_des, r_qty, t_id):
     cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM resources WHERE r_name = ?
-        ''', (r_name,))
+    cursor.execute('''SELECT * FROM resources WHERE r_type = ? AND r_des = ? AND t_id = ?
+    ''', (r_type, r_des, t_id,))
     resource = cursor.fetchone()
     if resource:
-        cursor.execute('''UPDATE resources SET r_qty = r_qty + ? WHERE r_name = ?
-        ''', (r_qty, r_name))
+        cursor.execute('''UPDATE resources SET r_qty = r_qty + q WHERE r_type = ? AND r_des = ? AND t_id = ? AND q = ?
+        ''', (r_type, r_des, t_id, r_qty,))
     else:
-        cursor.execute('''INSERT INTO resources (r_name, r_qty) VALUES (?, ?)
-        ''', (r_name, r_qty))
+        cursor.execute('''INSERT INTO resources (r_type, r_des, r_qty, t_id) VALUES (?, ?, ?, ?)
+        ''', (r_type, r_des, r_qty, t_id,))
     conn.commit()
 
 # Function to check if a resource exists in the database
-def check_resource(conn, r_id):
+def check_resource(conn, r_id, t_id):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM resources WHERE r_id = ?
-    ''', (r_id,))
+    SELECT * FROM resources WHERE r_id = ? AND t_id = ?
+    ''', (r_id, t_id,))
     resource = cursor.fetchone()
     r_qty = resource[3]
     if resource and r_qty > 0:
@@ -177,10 +179,10 @@ def check_resource(conn, r_id):
     else:
         return False
     
-def check_resource_quantity(conn, r_id):
+def check_resource_quantity(conn, r_id, t_id):
     cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM resources WHERE r_id=?
-    ''', (r_id,))
+    cursor.execute('''SELECT * FROM resources WHERE r_id= ? AND t_id= ?
+    ''', (r_id, t_id,))
     resource = cursor.fetchone()
 
     if resource is None:
@@ -203,24 +205,26 @@ def create_borrowed_table(conn):
         b_date TEXT NOT NULL,
         d_date TEXT NOT NULL,
         r_date TEXT DEFAULT NULL,
+        t_id INTEGER NOT NULL,
         FOREIGN KEY (s_id) REFERENCES students(s_id),
-        FOREIGN KEY (r_id) REFERENCES resources(r_id)
+        FOREIGN KEY (r_id) REFERENCES resources(r_id),
+        FOREIGN KEY (t_id) REFERENCES teachers(t_id)
     )
     ''')
     conn.commit()
 
 # Function to insert a new borrowed resource into the database
-def new_borrowed(conn, s_id, r_id):
+def new_borrowed(conn, s_id, r_id, t_id):
     cursor = conn.cursor()
     b_date = datetime.now().strftime("%Y-%m-%d")
     d_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
     r_date = None
-    borrowed_data = (s_id, r_id, b_date, d_date, r_date)
+    borrowed_data = (s_id, r_id, b_date, d_date, r_date, t_id)
     
-    if check_resource(conn, r_id):
+    if check_resource(conn, r_id, t_id):
         cursor.execute('''
-        INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date, t_id)
+        VALUES (?, ?, ?, ?, ?, ?)
         ''', borrowed_data)
         conn.commit()
         return True
@@ -238,16 +242,17 @@ def return_borrowed(conn, ref):
     conn.commit()
 
 # Function to get all borrowed resources
-def get_all_borrowed(conn):
+def get_all_borrowed(conn, t_id):
     cursor = conn.cursor()
-    cursor.execute('SELECT ref, s_id, r_id, b_date, d_date, r_date FROM borrowed')
+    cursor.execute('''SELECT ref, s_id, r_id, b_date, d_date, r_date FROM borrowed WHERE r_date IS NULL and t_id = ?
+    ''', (t_id,))
     return cursor.fetchall()
 
 # Function to check if a customer exists in the database
 def check_borrowed(conn, ref):
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT * FROM students WHERE ref = ?
+    SELECT * FROM borrowed WHERE ref = ?
     ''', (ref,))
     return cursor.fetchone()
 

@@ -200,4 +200,9 @@ if __name__ == "__main__":  # for testing
 
 
 # nuova funzione per aggiungere un tutte le borrowed che sono nel database al treeview della home quando si apre il programma
-# fare in modo che la fuzion eper aggiungere un borrowed al database chiami solo il borrowed non ritornati
+# fare in modo che la fuzione per aggiungere un borrowed al database chiami solo il borrowed non ritornati
+# fai in modo che si puo prendere uno solo di ogni oggetto
+# aggiungi oggetto nummero che vuole non perforza deve essere uno in piu se ce il oggetto
+# aggiungi t_id a risorse, cosi che un insegnante puo dare via solo i suoi oggetti non quelli di altri insegnanti
+# aggiungi una window per aggiungere nuovi oggetti se e la prima volta che si usa il programma, usa un text file per confermare se ha fatto log in (YES/NO)
+# aggiungi una window per aggiungere nuovi studenti se e la prima volta che si usa il programma, usa un text file per confermare se ha fatto log in (YES/NO)
