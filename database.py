@@ -141,11 +141,11 @@ def update_teacher_password(conn, t_id, t_pass):
 def create_resources_table(conn):
     cursor = conn.cursor()
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS resources (
+    CREATE TABLE IF NOT EXISTS resources(
         r_id INTEGER PRIMARY KEY AUTOINCREMENT,
         r_type TEXT NOT NULL,
-        r_des TEXT default NULL,
-        r_qty INTEGER default NOT NULL,
+        r_des TEXT NOT NULL,
+        r_qty INTEGER NOT NULL,
         t_id INTEGER NOT NULL,
         FOREIGN KEY (t_id) REFERENCES teachers(t_id)
     )
@@ -159,8 +159,8 @@ def new_resource(conn, r_type, r_des, r_qty, t_id):
     ''', (r_type, r_des, t_id,))
     resource = cursor.fetchone()
     if resource:
-        cursor.execute('''UPDATE resources SET r_qty = r_qty + q WHERE r_type = ? AND r_des = ? AND t_id = ? AND q = ?
-        ''', (r_type, r_des, t_id, r_qty,))
+        cursor.execute('''UPDATE resources SET r_qty = r_qty + ? WHERE r_type = ? AND r_des = ? AND t_id = ?
+        ''', ( r_qty, r_type, r_des, t_id,))
     else:
         cursor.execute('''INSERT INTO resources (r_type, r_des, r_qty, t_id) VALUES (?, ?, ?, ?)
         ''', (r_type, r_des, r_qty, t_id,))
@@ -235,7 +235,7 @@ def new_borrowed(conn, s_id, r_id, t_id):
 # Function to return a borrowed resource
 def return_borrowed(conn, ref):
     cursor = conn.cursor()
-    r_date = datetime.now().strftime('%D-%M-%Y')
+    r_date = datetime.now().strftime('%Y-%m-%d')
     cursor.execute('''
     UPDATE borrowed SET r_date = ? WHERE ref = ?
     ''', (r_date, ref))
@@ -263,8 +263,8 @@ def get_last_ref(conn):
     return cursor.fetchone()[0]
 
 
-# Main function to run the program
-def main():
+# run the program
+if __name__ == "__main__":
     # Connect to the database
     conn = connect_to_db()
 
@@ -275,14 +275,11 @@ def main():
     create_borrowed_table(conn)
 
     # Insert a new record in every table
-    # new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
-    # new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
-    new_resource(conn, '111111')
-    new_borrowed(conn, 376594, 1)
+    new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
+    new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1', 111111)
+    new_resource(conn, '111111', 111111)
+    new_borrowed(conn, 376594, 2, 111111)
 
     # Close the connection
     close_connection(conn)
 
-# Run the program
-if __name__ == "__main__":
-    main()
