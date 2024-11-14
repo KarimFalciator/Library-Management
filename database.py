@@ -220,12 +220,19 @@ def new_borrowed(conn, s_id, r_id, t_id):
     d_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
     r_date = None
     borrowed_data = (s_id, r_id, b_date, d_date, r_date, t_id)
-    
+    print('variables set')
+
     if check_resource(conn, r_id, t_id):
+        print('Resource exists')
         cursor.execute('''
-        INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date, t_id)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO borrowed (s_id, r_id, b_date, d_date, r_date, t_id) VALUES (?, ?, ?, ?, ?, ?)
         ''', borrowed_data)
+        conn.commit()
+        print('Inserted into borrowed')
+        cursor.execute('''
+        UPDATE resources SET r_qty = r_qty - 1 WHERE r_id = ? AND t_id = ?
+        ''', (r_id, t_id,))
+        print('Updated resources')
         conn.commit()
         return True
     else:
@@ -268,17 +275,17 @@ if __name__ == "__main__":
     # Connect to the database
     conn = connect_to_db()
 
-    # Create the tables
-    create_teachers_table(conn)
-    create_students_table(conn)
-    create_resources_table(conn)
-    create_borrowed_table(conn)
+    # # Create the tables
+    # create_teachers_table(conn)
+    # create_students_table(conn)
+    # create_resources_table(conn)
+    # create_borrowed_table(conn)
 
-    # Insert a new record in every table
-    new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
-    new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1', 111111)
-    new_resource(conn, '111111', 111111)
-    new_borrowed(conn, 376594, 2, 111111)
+    # # Insert a new record in every table
+    # new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
+    # new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
+    # new_resource(conn, 'camera', 'xyz', 1, 111111)
+    # new_borrowed(conn, 189236, 1, 111111)
 
     # Close the connection
     close_connection(conn)

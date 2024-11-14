@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 
 class main_UI:
 
-    def __init__(self, main):
+    def __init__(self, main, t_id=None):
         self.main = main
+        self.t_id = t_id
         self.main.title('Lending Management System')
-        self.main.geometry('600x300')
+        self.main.geometry('700x400')
         # self.main.resizable(False, False)
         
         self.conn = database.connect_to_db('lending.db')
@@ -78,7 +79,7 @@ class main_UI:
         ref = database.get_last_ref(self.conn) + 1
 
         if database.check_resource_quantity(self.conn, h_r_id) and database.check_student(self.conn, h_s_id):
-            database.new_borrowed(self.conn, h_s_id, h_r_id)
+            database.new_borrowed(self.conn, h_s_id, h_r_id, self.t_id)
 
             # Insert into Treeview
             self.current_tree.insert('', '0', values=(ref, h_s_id, h_r_id, borrowed_date, returned_date, 'None'))
@@ -92,7 +93,7 @@ class main_UI:
 
     def add_borrowed_from_db(self):
         # Fetch all borrowed records from the database
-        borrowed_records = database.get_all_borrowed(self.conn)
+        borrowed_records = database.get_all_borrowed(self.conn, self.t_id)
 
         # Insert each borrowed record into the Treeview
         for record in borrowed_records:

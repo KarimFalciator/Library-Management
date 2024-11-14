@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk
 import database
 import reset_password
+from main_ui import main_UI
 
 class login_UI:
 
@@ -67,6 +68,7 @@ class login_UI:
             success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=('Arial', 13))
             success_label.pack(pady=5)
             self.login.after(3500, self.login.destroy)
+            main_UI(ctk.CTk(), teacherID)
         else:
             error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
