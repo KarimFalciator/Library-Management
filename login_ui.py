@@ -65,14 +65,17 @@ class login_UI:
         check = database.check_teacher_login(self.conn, teacherID, teacherPass)
 
         if check:
+            print('Login Successful')
             success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=('Arial', 13))
             success_label.pack(pady=5)
-            self.login.after(3500, self.login.destroy)
             main_UI(ctk.CTk(), teacherID)
+            print('2')
+            self.login.destroy()
+            print('3')
         else:
             error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
-            self.login.after(7000, error_label.destroy)
+            self.error_label.destroy()
 
     def toggle_password(self, show):
         if show:

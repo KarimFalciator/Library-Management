@@ -4,8 +4,8 @@ import database
 from datetime import datetime, timedelta
 
 class main_UI:
-
-    def __init__(self, main, t_id=None):
+#take off none as t_id once testing after login
+    def __init__(self, main, t_id):
         self.main = main
         self.t_id = t_id
         self.main.title('Lending Management System')
@@ -196,7 +196,8 @@ class main_UI:
 
 if __name__ == "__main__":  # for testing
     login = tk.Tk()
-    log = main_UI(login)
+    t_id = 111111
+    log = main_UI(login, t_id)
     login.mainloop()
 
 
