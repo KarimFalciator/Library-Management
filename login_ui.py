@@ -68,14 +68,18 @@ class login_UI:
             print('Login Successful')
             success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=('Arial', 13))
             success_label.pack(pady=5)
+
+            # Open main UI
             main_UI(ctk.CTk(), teacherID)
-            print('2')
-            self.login.destroy()
-            print('3')
+
+            # Properly destroy the login window
+            # self.login.destroy()
         else:
             error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', text_color='#FF0400', font=('Arial', 13))
             error_label.pack(pady=5)
-            self.error_label.destroy()
+
+            # Schedule error message removal and store the callback ID
+            self.error_callback_id = self.login.after(7000, error_label.destroy)
 
     def toggle_password(self, show):
         if show:
