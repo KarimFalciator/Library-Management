@@ -1,3 +1,4 @@
+import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
 import database
@@ -12,10 +13,23 @@ class main_UI:
         self.main.geometry('700x400')
         # self.main.resizable(False, False)
         
+        ctk.set_appearance_mode("System")
+        ctk.set_default_color_theme("blue")
+
         self.conn = database.connect_to_db('lending.db')
 
-        self.Notebook = ttk.Notebook(main)
-        self.Notebook.pack(pady=0, expand=True, fill='both')
+        # Apply ttk Notebook style to match CustomTkinter appearance
+        style = ttk.Style()
+        style.theme_use('default')
+
+        # Customizing the notebook tabs to match CustomTkinter
+        style.configure('TNotebook', background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1])
+        style.configure('TNotebook.Tab', font=('Arial', 12), padding=[10, 5], background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][0])
+        style.map("TNotebook.Tab", background=[("selected", ctk.ThemeManager.theme["CTkButton"]["fg_color"][1])])
+
+        # Create a ttk Notebook, styled to match CustomTkinter
+        self.Notebook = ttk.Notebook(self.main)
+        self.Notebook.pack(pady=10, expand=True, fill='both')
 
         self.create_home_tab()
         self.create_read_tab()
@@ -27,11 +41,23 @@ class main_UI:
     # home tab ---------------------------------------------------------------
     
     def create_home_tab(self):
-        home_tab = ttk.Frame(self.Notebook, width=300, height=490)
+        home_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(home_tab, text='Home')
 
         columns = ('ref', 's_id', 'r_id', 'b_date', 'd_date', 'r_date')
         self.current_tree = ttk.Treeview(home_tab, columns=columns, show='headings')
+
+        bg_color = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkFrame"]["fg_color"])
+        text_color = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkLabel"]["text_color"])
+        selected_color = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkButton"]["fg_color"])
+
+        treestyle = ttk.Style()
+        treestyle.theme_use('default')
+        treestyle.configure("Treeview", background=bg_color, foreground=text_color, fieldbackground=bg_color, borderwidth=0)
+        treestyle.map('Treeview', background=[('selected', bg_color)], foreground=[('selected', selected_color)])
+        self.main.bind("<<TreeviewSelect>>", lambda event: self.main.focus_set())
+
+        self.current_tree.bind("<Button-3>", self.show_context_menu)
 
         # Define headings
         self.current_tree.heading('ref', text='Reference')
@@ -57,18 +83,32 @@ class main_UI:
         self.current_tree.configure(yscrollcommand=scrollbar.set)
 
         # Add Borrowed ResourceForm
-        self.h_s_id_label = tk.Label(home_tab, text="Student ID:")
-        self.h_s_id_label.grid(row=1, column=0, padx=5, pady=5)
-        self.h_s_id_entry = tk.Entry(home_tab)
+        self.h_s_id_CTklabel = ctk.CTkLabel(home_tab, text="Student ID:")
+        self.h_s_id_CTklabel.grid(row=1, column=0, padx=5, pady=5)
+        self.h_s_id_entry = ctk.CTkEntry(home_tab)
         self.h_s_id_entry.grid(row=2, column=0, padx=5, pady=5)
 
-        self.h_r_id_label = tk.Label(home_tab, text="Resource ID:")
-        self.h_r_id_label.grid(row=1, column=1, padx=5, pady=5)
-        self.h_r_id_entry = tk.Entry(home_tab)
+        self.h_r_id_CTklabel = ctk.CTkLabel(home_tab, text="Resource ID:")
+        self.h_r_id_CTklabel.grid(row=1, column=1, padx=5, pady=5)
+        self.h_r_id_entry = ctk.CTkEntry(home_tab)
         self.h_r_id_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.add_borrowed = tk.Button(home_tab, text="Add Borrowed resource", command=self.add_borrowed_resource)
+        self.add_borrowed = ctk.CTkButton(home_tab, text="Add Borrowed resource", command=self.add_borrowed_resource)
         self.add_borrowed.grid(row=3, column=0, columnspan=2, pady=10)
+
+    def show_context_menu(self, event):
+        # Get the selected item
+        selected_item = event.widget.selection()
+        if selected_item:
+            # Create a context menu
+            context_menu = tk.Menu(event.widget, tearoff=0)
+            context_menu.add_command(label="Option 1", command=lambda: print("Option 1 selected"))
+            context_menu.add_command(label="Option 2", command=lambda: print("Option 2 selected"))
+            context_menu.add_command(label="Option 3", command=lambda: print("Option 3 selected"))
+            
+            # Show the context menu
+            context_menu.post(event.x_root, event.y_root)
+
 
     def add_borrowed_resource(self):
         # Fetch details from entry widgets
@@ -102,7 +142,7 @@ class main_UI:
 
     #  read tab -----------------------------------------------------------------
     def create_read_tab(self):
-        read_tab = ttk.Frame(self.Notebook, width=500, height=490)
+        read_tab = ctk.CTkFrame(self.Notebook, width=500, height=490)
         self.Notebook.add(read_tab, text='Previous Read resources')
 
         columns = ('Name', 'Genre', 'Borrowed', 'Returned')
@@ -130,7 +170,7 @@ class main_UI:
 
     # resource list tab --------------------------------------------------------------
     def create_resource_list_tab(self):
-        resource_list_tab = ttk.Frame(self.Notebook, width=300, height=490)
+        resource_list_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(resource_list_tab, text='List of resources')
 
         columns = ('Name', 'Author', 'Genre')
@@ -155,19 +195,19 @@ class main_UI:
         self.resource_list_tree.configure(yscrollcommand=scrollbar.set)
 
         # Add Resource Form
-        tk.Label(resource_list_tab, text="resource Name:").grid(row=1, column=0, padx=5, pady=5)
-        self.resource_name = tk.Entry(resource_list_tab)
+        ctk.CTkLabel(resource_list_tab, text="resource Name:").grid(row=1, column=0, padx=5, pady=5)
+        self.resource_name = ctk.CTkEntry(resource_list_tab)
         self.resource_name.grid(row=1, column=1, padx=5, pady=5)
 
-        tk.Label(resource_list_tab, text="Author:").grid(row=2, column=0, padx=5, pady=5)
-        self.resource_author = tk.Entry(resource_list_tab)
+        ctk.CTkLabel(resource_list_tab, text="Author:").grid(row=2, column=0, padx=5, pady=5)
+        self.resource_author = ctk.CTkEntry(resource_list_tab)
         self.resource_author.grid(row=2, column=1, padx=5, pady=5)
 
-        tk.Label(resource_list_tab, text="Genre:").grid(row=3, column=0, padx=5, pady=5)
-        self.resource_genre = tk.Entry(resource_list_tab)
+        ctk.CTkLabel(resource_list_tab, text="Genre:").grid(row=3, column=0, padx=5, pady=5)
+        self.resource_genre = ctk.CTkEntry(resource_list_tab)
         self.resource_genre.grid(row=3, column=1, padx=5, pady=5)
 
-        tk.Button(resource_list_tab, text="Add Resource", command=self.add_resource).grid(row=4, column=0, columnspan=2, pady=10)
+        ctk.CTkButton(resource_list_tab, text="Add Resource", command=self.add_resource).grid(row=4, column=0, columnspan=2, pady=10)
 
     def add_resource(self):
         # Fetch details from entry widgets
@@ -186,16 +226,16 @@ class main_UI:
 
     # settings
     def create_settings_tab(self):
-        settings_tab = ttk.Frame(self.Notebook, width=300, height=490)
+        settings_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(settings_tab, text='Settings')
 
     # help tab -------------------------------------------------------------------
     def create_help_tab(self):
-        help_tab = ttk.Frame(self.Notebook, width=300, height=490)
+        help_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(help_tab, text='Help')
 
 if __name__ == "__main__":  # for testing
-    login = tk.Tk()
+    login = ctk.CTk()
     t_id = 111111
     log = main_UI(login, t_id)
     login.mainloop()
