@@ -263,6 +263,18 @@ def check_borrowed(conn, ref):
     ''', (ref,))
     return cursor.fetchone()
 
+# Function to check if a resource is late
+def check_late(conn, ref):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT r_date FROM borrowed WHERE ref = ?
+    ''', (ref,))
+    r_date = cursor.fetchone()
+    if r_date == None:
+        return True
+    else:
+        return False
+
 # Function to get the last ref from borrowed table
 def get_last_ref(conn):
     cursor = conn.cursor()
