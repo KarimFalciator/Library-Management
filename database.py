@@ -214,10 +214,10 @@ def create_borrowed_table(conn):
     conn.commit()
 
 # Function to insert a new borrowed resource into the database
-def new_borrowed(conn, s_id, r_id, t_id):
+def new_borrowed(conn, s_id, r_id, t_id, days):
     cursor = conn.cursor()
     b_date = datetime.now().strftime("%Y-%m-%d")
-    d_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+    d_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
     r_date = None
     borrowed_data = (s_id, r_id, b_date, d_date, r_date, t_id)
     print('variables set')
@@ -238,15 +238,30 @@ def new_borrowed(conn, s_id, r_id, t_id):
     else:
         return False
 
-
 # Function to return a borrowed resource
-def return_borrowed(conn, ref):
+def return_borrowed(conn, ref, r_id, t_id):
     cursor = conn.cursor()
     r_date = datetime.now().strftime('%Y-%m-%d')
     cursor.execute('''
     UPDATE borrowed SET r_date = ? WHERE ref = ?
     ''', (r_date, ref))
+    cursor.execute('''
+    UPDATE resources SET r_qty = r_qty + 1 WHERE r_id = ? and t_id = ?
+    ''', (r_id, t_id))
     conn.commit()
+
+def increase_borrowed_d_date(conn, ref, days):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT d_date FROM borrowed WHERE ref = ?
+    ''', (ref,))
+    d_date = cursor.fetchone()[0]
+    new_d_date = (datetime.strptime(d_date, '%Y-%m-%d') + timedelta(days=days)).strftime('%Y-%m-%d')
+    cursor.execute('''
+    UPDATE borrowed SET d_date = ? WHERE ref = ?
+    ''', (new_d_date, ref))
+    conn.commit()
+    
 
 # Function to get all borrowed resources
 def get_all_borrowed(conn, t_id):
