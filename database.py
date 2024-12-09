@@ -270,6 +270,12 @@ def get_all_borrowed(conn, t_id):
     ''', (t_id,))
     return cursor.fetchall()
 
+def get_returned_borrowed(conn, t_id):
+    cursor = conn.cursor()
+    cursor.execute('''SELECT ref, s_id, r_id, b_date, d_date, r_date FROM borrowed WHERE r_date IS NOT NULL and t_id = ?
+    ''', (t_id,))
+    return cursor.fetchall()
+
 # Function to check if a customer exists in the database
 def check_borrowed(conn, ref):
     cursor = conn.cursor()
