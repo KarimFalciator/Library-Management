@@ -159,12 +159,36 @@ def new_resource(conn, r_type, r_des, r_qty, t_id):
     ''', (r_type, r_des, t_id,))
     resource = cursor.fetchone()
     if resource:
-        cursor.execute('''UPDATE resources SET r_qty = r_qty + ? WHERE r_type = ? AND r_des = ? AND t_id = ?
-        ''', ( r_qty, r_type, r_des, t_id,))
+        return False
     else:
         cursor.execute('''INSERT INTO resources (r_type, r_des, r_qty, t_id) VALUES (?, ?, ?, ?)
         ''', (r_type, r_des, r_qty, t_id,))
+        return True
     conn.commit()
+
+def update_resource_qty(conn, r_id, qty, t_id):
+    cursor = conn.cursor()
+    cursor.execute('''UPDATE resources SET r_qty = r_qty + ? WHERE r_id = ? AND t_id = ?
+        ''', ( qty, r_id, t_id,))
+    conn.commit()
+
+def set_resource_unavailable(conn, r_id, t_id):
+    cursor = conn.cursor()
+    cursor.execute('''UPDATE resources SET r_qty = 0 WHERE r_id = ? AND t_id = ?
+    ''', (r_id, t_id,))
+    conn.commit()
+
+def get_all_resources(conn, t_id):
+    cursor = conn.cursor()
+    cursor.execute('''SELECT r_id, r_type, r_des, r_qty FROM resources WHERE t_id = ?
+    ''', (t_id,))
+    return cursor.fetchall()
+
+def get_available_resources(conn, t_id):
+    cursor = conn.cursor()
+    cursor.execute('''SELECT r_id, r_type, r_des, r_qty FROM resources WHERE t_id = ? and r_qty > 0
+    ''', (t_id,))
+    return cursor.fetchall()
 
 # Function to check if a resource exists in the database
 def check_resource(conn, r_id, t_id):
