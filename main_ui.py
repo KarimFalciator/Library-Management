@@ -143,6 +143,8 @@ class main_UI:
             database.return_borrowed(self.conn, ref, r_id, self.t_id)
             # Refresh the Treeview
             self.refresh_current_tree()
+            self.refresh_returned_tree()
+            self.refresh_resources_tree()
         else:
             None
 
@@ -210,6 +212,7 @@ class main_UI:
             self.h_r_id_entry.delete(0, 'end')
             self.h_days_entry.delete(0, 'end')
             self.refresh_current_tree()
+            self.refresh_resources_tree()
         else:
             messagebox.showerror('Error', 'Resource not available or Student does not exist')
 
@@ -266,47 +269,18 @@ class main_UI:
         scrollbar_returned.grid(row=0, column=4, sticky='ns')
         self.returned_tree.configure(yscrollcommand=scrollbar_returned.set)
 
-    # def show_context_menu_returned(self, event):
-    #     # Get the selected item
-    #     selected_item = event.widget.selection()
-    #     if selected_item:
-    #         # Create a context menu
-    #         context_menu_returned = tk.Menu(event.widget, tearoff=0)
-    #         context_menu_returned.add_command(label="Return Object", command= self.return_object)
-    #         context_menu_returned.add_command(label="Extend Due Date", command= self.extend_borrowed)
-    #         context_menu_returned.add_command(label="close", command= self.close_context_menu)
-            
-    #         # Show the context menu
-    #         context_menu_returned.post(event.x_root, event.y_root)
+    def refresh_returned_tree(self):
+        # Clear the Treeview
+        for item in self.returned_tree.get_children():
+            self.returned_tree.delete(item)
 
-    #          # Bind the focus out event to destroy the context menu
-    #         self.returned_tree.bind("<FocusOut>", self.hide_context_menu_returned)
+        # Fetch all borrowed records from the database
+        returned_records = database.get_returned_borrowed(self.conn, self.t_id)
 
-    # def hide_context_menu_returned(self, event):
-    #     if hasattr(self, 'context_menu'):
-    #         self.context_menu_returned.unpost()
-    #         del self.context_menu_returned
-    #     else:
-    #         pass
+        # Insert each borrowed record into the Treeview
+        for record in returned_records:
+            self.returned_tree.insert('', 'end', values=record)
 
-    # def refresh_tree(self):
-    #     # Clear the Treeview
-    #     for item in self.current_tree.get_children():
-    #         self.current_tree.delete(item)
-
-    #     # Fetch all borrowed records from the database
-    #     borrowed_records = database.get_returned_borrowed(self.conn, self.t_id)
-
-    #     # Insert each borrowed record into the Treeview
-    #     for record in borrowed_records:
-    #         self.current_tree.insert('', 'end', values=record)
-
-    # def close_context_menu(self):
-    #     if hasattr(self, 'context_menu'):
-    #         self.context_menu.unpost()
-    #         del self.context_menu
-    #     else:
-    #         pass
 
     def add_previous_from_db(self):
         returned_records = database.get_returned_borrowed(self.conn, self.t_id)
@@ -480,6 +454,9 @@ class main_UI:
         settings_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(settings_tab, text='Settings')
 
+
+
+
     # help tab -------------------------------------------------------------------
     def create_help_tab(self):
         help_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
@@ -496,3 +473,5 @@ if __name__ == "__main__":  # for testing
 # aggiungi oggetto nummero che vuole non perforza deve essere uno in piu se ce il oggetto
 # aggiungi una window per aggiungere nuovi oggetti se e la prima volta che si usa il programma, usa un text file per confermare se ha fatto log in (YES/NO)
 # aggiungi una window per aggiungere nuovi studenti se e la prima volta che si usa il programma, usa un text file per confermare se ha fatto log in (YES/NO)
+# fai in modo che non si possa prendere in prestito dopo la chiusura di scuola
+# fai in modo che alla chiusura a tutti i borrowed una email viene mandata per ricordargli di restituire l'oggetto
