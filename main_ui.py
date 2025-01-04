@@ -20,9 +20,9 @@ class main_UI:
                 settings = json.load(file)
 
         self.font = settings['Font']
-        self.font_size = settings["Font_size"]
+        self.font_size = int(settings["Font_size"])
         self.theme = settings["Theme"]
-        self.zoom = settings["Zoom"]
+        self.zoom = max(0.5, min(float(settings["Zoom"]), 3))
         
         width = 695*self.zoom
         height = 430*self.zoom
@@ -492,25 +492,35 @@ class main_UI:
         self.zoom_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.zoom)
         self.zoom_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
 
-
-        # Apply Button
-        self.apply_button = ctk.CTkButton(settings_tab, text="Apply Settings", command=self.apply_settings)
-        self.apply_button.grid(row=4, column=0, columnspan=2, padx=10, pady=20)
         # Save Button
         self.save_button = ctk.CTkButton(settings_tab, text="Save Settings", command=self.save_settings)
         self.save_button.grid(row=5, column=0, columnspan=2, padx=10, pady=20)
-        
-    def apply_settings(self):
-        self.font = self.font_type_entry.get()
-        self.font_size = self.font_size_entry.get()
-        self.theme = self.theme_entry.get()
-        self.zoom = self.zoom_entry.get()
-        print(self.font, self.font_size, self.theme, self.zoom)
-        self.main.destroy()
-        main_UI(ctk.CTk(), self.t_id)
 
     def save_settings(self):
-        json_functions.update_settings(self.font, self.font_size, self.theme, self.zoom)
+        # Validate font size
+        font_size_input = self.font_size_entry.get().strip()
+        if not font_size_input.isdigit():
+            messagebox.showerror("Invalid Input", "Font size must be a positive integer.")
+            return
+        font_size = int(font_size_input)
+
+        # Validate zoom level
+        zoom_input = self.zoom_entry.get().strip()
+        try:
+            zoom = float(zoom_input)
+            if zoom <= 0:
+                raise ValueError("Zoom must be greater than zero.")
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Zoom must be a positive number.")
+            return
+
+        # Validate other inputs
+        font = self.font_type_entry.get().strip()
+        theme = self.theme_entry.get().strip()
+
+        # Save settings
+        json_functions.update_settings(font, font_size, theme, zoom)
+        messagebox.showinfo("Settings Saved", "Your settings have been saved successfully.")
 
 
 
