@@ -3,17 +3,36 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import database
 from datetime import datetime, timedelta
+import json
+import os
+import json_functions
 
 class main_UI:
-#take off none as t_id once testing after login
+
     def __init__(self, main, t_id):
-        self.main = main
-        self.t_id = t_id
-        self.main.title('Lending Management System')
-        self.main.geometry('700x450')
-        self.main.resizable(False, False)
+        self.t_id = t_id    
+
+        if os.path.exists('saved_settings.json'):
+            with open('saved_settings.json', 'r') as file:
+                settings = json.load(file)
+        else:
+            with open('default_settings.json', 'r') as file:
+                settings = json.load(file)
+
+        self.font = settings['Font']
+        self.font_size = settings["Font_size"]
+        self.theme = settings["Theme"]
+        self.zoom = settings["Zoom"]
         
-        ctk.set_appearance_mode("System")
+        width = 695*self.zoom
+        height = 430*self.zoom
+
+        self.main = main
+        self.main.title('Lending Management System')
+        self.main.geometry(f'{width}x{height}')
+        # self.main.resizable(False, False)
+
+        ctk.set_appearance_mode(self.theme)
         ctk.set_default_color_theme("blue")
 
         self.conn = database.connect_to_db('lending.db')
@@ -43,7 +62,7 @@ class main_UI:
     # home tab ---------------------------------------------------------------
     
     def create_home_tab(self):
-        home_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
+        home_tab = ctk.CTkFrame(self.Notebook)
         self.Notebook.add(home_tab, text='Home')
 
         columns_home = ('ref', 's_id', 'r_id', 'b_date', 'd_date', 'r_date')
@@ -55,7 +74,7 @@ class main_UI:
 
         treestyle = ttk.Style()
         treestyle.theme_use('default')
-        treestyle.configure("Treeview", background=bg_color_home, foreground=text_color_home, fieldbackground=bg_color_home, borderwidth=0)
+        treestyle.configure("Treeview", font=(self.font, self.font_size), background=bg_color_home, foreground=text_color_home, fieldbackground=bg_color_home, borderwidth=0)
         treestyle.map('Treeview', background=[('selected', bg_color_home)], foreground=[('selected', selected_color_home)])
         self.main.bind("<<TreeviewSelect>>", lambda event: self.main.focus_set())
 
@@ -70,12 +89,12 @@ class main_UI:
         self.current_tree.heading('r_date', text='Returned Date')
 
         # Define column widths
-        self.current_tree.column('ref', width=80)
-        self.current_tree.column('s_id', width=90)
-        self.current_tree.column('r_id', width=90)
-        self.current_tree.column('b_date', width=105)
-        self.current_tree.column('d_date', width=90)
-        self.current_tree.column('r_date', width=105)
+        self.current_tree.column('ref', width=int(80*self.zoom))
+        self.current_tree.column('s_id', width=int(90*self.zoom))
+        self.current_tree.column('r_id', width=int(90*self.zoom))
+        self.current_tree.column('b_date', width=int(105*self.zoom))
+        self.current_tree.column('d_date', width=int(90*self.zoom))
+        self.current_tree.column('r_date', width=int(105*self.zoom))
 
         self.current_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5, sticky='nsew')
 
@@ -85,25 +104,25 @@ class main_UI:
         self.current_tree.configure(yscrollcommand=scrollbar_home.set)
 
         # Add Borrowed ResourceForm
-        self.add_borrowed_CTklable = ctk.CTkLabel(home_tab, text="Add a new borrowed:")
+        self.add_borrowed_CTklable = ctk.CTkLabel(home_tab, text="Add a new borrowed:", font=(self.font, self.font_size))
         self.add_borrowed_CTklable.grid(row=1, column=0, padx=5, pady=0, sticky='n')
 
-        self.h_s_id_CTklabel = ctk.CTkLabel(home_tab, text="Student ID:")
+        self.h_s_id_CTklabel = ctk.CTkLabel(home_tab, text="Student ID:", font=(self.font, self.font_size))
         self.h_s_id_CTklabel.grid(row=2, column=0, padx=5, pady=5)
         self.h_s_id_entry = ctk.CTkEntry(home_tab)
         self.h_s_id_entry.grid(row=3, column=0, padx=5, pady=5)
 
-        self.h_r_id_CTklabel = ctk.CTkLabel(home_tab, text="Resource ID:")
+        self.h_r_id_CTklabel = ctk.CTkLabel(home_tab, text="Resource ID:", font=(self.font, self.font_size))
         self.h_r_id_CTklabel.grid(row=2, column=1, padx=5, pady=5)
         self.h_r_id_entry = ctk.CTkEntry(home_tab)
         self.h_r_id_entry.grid(row=3, column=1, padx=5, pady=5)
 
-        self.h_days_CTklabel = ctk.CTkLabel(home_tab, text="Days borrowed:")
+        self.h_days_CTklabel = ctk.CTkLabel(home_tab, text="Days borrowed:", font=(self.font, self.font_size))
         self.h_days_CTklabel.grid(row=2, column=2, padx=5, pady=5)
         self.h_days_entry = ctk.CTkEntry(home_tab)
         self.h_days_entry.grid(row=3, column=2, padx=5, pady=5)
 
-        self.add_borrowed = ctk.CTkButton(home_tab, text="Add Borrowed resource", command=self.add_borrowed_resource)
+        self.add_borrowed = ctk.CTkButton(home_tab, text="Add Borrowed resource", font=(self.font, self.font_size), command=self.add_borrowed_resource)
         self.add_borrowed.grid(row=4, column=1, columnspan=1, pady=10)
 
     def show_context_menu_home(self, event):
@@ -112,9 +131,9 @@ class main_UI:
         if selected_item:
             # Create a context menu
             context_menu_home = tk.Menu(event.widget, tearoff=0)
-            context_menu_home.add_command(label="Return Object", command= self.return_object)
-            context_menu_home.add_command(label="Extend Due Date", command= self.extend_borrowed)
-            context_menu_home.add_command(label="close", command= self.close_context_menu)
+            context_menu_home.add_command(label="Return Object", font=(self.font, self.font_size), command= self.return_object)
+            context_menu_home.add_command(label="Extend Due Date", font=(self.font, self.font_size), command= self.extend_borrowed)
+            context_menu_home.add_command(label="close", font=(self.font, self.font_size), command= self.close_context_menu)
             
             # Show the context menu
             context_menu_home.post(event.x_root, event.y_root)
@@ -154,11 +173,11 @@ class main_UI:
             self.extend_window = tk.Toplevel(self.main)
             self.extend_window.title("Extend Due Date")
 
-            tk.Label(self.extend_window, text="Enter number of days to extend:").pack(pady=10)
+            tk.Label(self.extend_window, text="Enter number of days to extend:", font=(self.font, self.font_size),).pack(pady=10)
             self.days_entry = tk.Entry(self.extend_window)
             self.days_entry.pack(pady=5)
 
-            tk.Button(self.extend_window, text="Extend", command=self.update_due_date).pack(pady=10)
+            tk.Button(self.extend_window, text="Extend", font=(self.font, self.font_size), command=self.update_due_date).pack(pady=10)
 
     def update_due_date(self):
         try:
@@ -173,7 +192,7 @@ class main_UI:
             # Refresh the Treeview
             self.refresh_current_tree()
         except ValueError:
-            messagebox.showerror("Invalid input", "Please enter a valid number")
+            messagebox.showerror("Invalid input", "Please enter a valid number", font=(self.font, self.font_size),)
 
     def refresh_current_tree(self):
         # Clear the Treeview
@@ -232,7 +251,7 @@ class main_UI:
         self.Notebook.add(return_tab, text='Returned Borrowed')
 
         columns = ('ref', 's_id', 'r_id', 'b_date', 'd_date', 'r_date')
-        self.returned_tree = ttk.Treeview(return_tab, columns=columns, show='headings')
+        self.returned_tree = ttk.Treeview(return_tab, columns=columns, show='headings', height=17)
 
         bg_color_returned = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkFrame"]["fg_color"])
         text_color_returned = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkLabel"]["text_color"])
@@ -244,8 +263,6 @@ class main_UI:
         treestyle.map('Treeview', background=[('selected', bg_color_returned)], foreground=[('selected', selected_color_returned)])
         self.main.bind("<<TreeviewSelect>>", lambda event: self.main.focus_set())
 
-        # self.returned_tree.bind("<Button-3>", self.show_context_menu_returned)
-
         # Define headings
         self.returned_tree.heading('ref', text='Reference')
         self.returned_tree.heading('s_id', text='Student ID')
@@ -255,12 +272,12 @@ class main_UI:
         self.returned_tree.heading('r_date', text='Returned Date')
 
         # Define column widths
-        self.returned_tree.column('ref', width=80)
-        self.returned_tree.column('s_id', width=90)
-        self.returned_tree.column('r_id', width=90)
-        self.returned_tree.column('b_date', width=105)
-        self.returned_tree.column('d_date', width=90)
-        self.returned_tree.column('r_date', width=105)
+        self.returned_tree.column('ref', width=int(80*self.zoom))
+        self.returned_tree.column('s_id', width=int(90*self.zoom))
+        self.returned_tree.column('r_id', width=int(90*self.zoom))
+        self.returned_tree.column('b_date', width=int(105*self.zoom))
+        self.returned_tree.column('d_date', width=int(90*self.zoom))
+        self.returned_tree.column('r_date', width=int(105*self.zoom))
 
         self.returned_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5, sticky='nsew')
 
@@ -315,10 +332,10 @@ class main_UI:
         self.resources_tree.heading('r_qty', text='Number Available')
 
         # Define column widths
-        self.resources_tree.column('r_id', width=140)
-        self.resources_tree.column('r_type', width=140)
-        self.resources_tree.column('r_des', width=140)
-        self.resources_tree.column('r_qty', width=140)
+        self.resources_tree.column('r_id', width=int(140*self.zoom))
+        self.resources_tree.column('r_type', width=int(140*self.zoom))
+        self.resources_tree.column('r_des', width=int(140*self.zoom))
+        self.resources_tree.column('r_qty', width=int(140*self.zoom))
 
         self.resources_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5, sticky='nsew')
 
@@ -328,25 +345,25 @@ class main_UI:
         self.resources_tree.configure(yscrollcommand=scrollbar_resources.set)
 
         # Add Borrowed ResourceForm
-        self.add_resources_CTklable = ctk.CTkLabel(resources_tab, text="Add a new resource:")
+        self.add_resources_CTklable = ctk.CTkLabel(resources_tab, text="Add a new resource:", font=(self.font, self.font_size))
         self.add_resources_CTklable.grid(row=1, column=0, padx=5, pady=0, sticky='n')
 
-        self.r_type_CTklabel = ctk.CTkLabel(resources_tab, text="Object Name:")
+        self.r_type_CTklabel = ctk.CTkLabel(resources_tab, text="Object Name:", font=(self.font, self.font_size))
         self.r_type_CTklabel.grid(row=2, column=0, padx=5, pady=5)
         self.r_type_entry = ctk.CTkEntry(resources_tab)
         self.r_type_entry.grid(row=3, column=0, padx=5, pady=5)
 
-        self.r_des_CTklabel = ctk.CTkLabel(resources_tab, text="Model/Description:")
+        self.r_des_CTklabel = ctk.CTkLabel(resources_tab, text="Model/Description:", font=(self.font, self.font_size))
         self.r_des_CTklabel.grid(row=2, column=1, padx=5, pady=5)
         self.r_des_entry = ctk.CTkEntry(resources_tab)
         self.r_des_entry.grid(row=3, column=1, padx=5, pady=5)
 
-        self.r_qty_CTklabel = ctk.CTkLabel(resources_tab, text="Number of resources:")
+        self.r_qty_CTklabel = ctk.CTkLabel(resources_tab, text="Number of resources:", font=(self.font, self.font_size))
         self.r_qty_CTklabel.grid(row=2, column=2, padx=5, pady=5)
         self.r_qty_entry = ctk.CTkEntry(resources_tab)
         self.r_qty_entry.grid(row=3, column=2, padx=5, pady=5)
 
-        self.add_resources_button = ctk.CTkButton(resources_tab, text="Add New Resources", command=self.add_resources)
+        self.add_resources_button = ctk.CTkButton(resources_tab, text="Add New Resources", font=(self.font, self.font_size), command=self.add_resources)
         self.add_resources_button.grid(row=4, column=1, columnspan=1, pady=10)
 
     def show_context_menu_resources(self, event):
@@ -355,9 +372,9 @@ class main_UI:
         if selected_item:
             
             context_menu_resources = tk.Menu(event.widget, tearoff=0)
-            context_menu_resources.add_command(label="Return Object", command= self.return_object)
-            context_menu_resources.add_command(label="Extend Due Date", command= self.extend_borrowed)
-            context_menu_resources.add_command(label="close", command= self.close_context_menu)
+            context_menu_resources.add_command(label="Return Object", font=(self.font, self.font_size), command= self.return_object)
+            context_menu_resources.add_command(label="Extend Due Date", font=(self.font, self.font_size), command= self.extend_borrowed)
+            context_menu_resources.add_command(label="close", font=(self.font, self.font_size), command= self.close_context_menu)
 
             context_menu_resources.post(event.x_root, event.y_root)
 
@@ -388,11 +405,11 @@ class main_UI:
             self.extend_window_r = tk.Toplevel(self.main)
             self.extend_window_r.title("Update Quantity")
 
-            tk.Label(self.extend_window_r, text="Enter number of resources:").pack(pady=10)
+            tk.Label(self.extend_window_r, text="Enter number of resources:", font=(self.font, self.font_size)).pack(pady=10)
             self.qty_entry = tk.Entry(self.extend_window_r)
             self.qty_entry.pack(pady=5)
 
-            tk.Button(self.extend_window_r, text="Update", command=self.update_qty).pack(pady=10)
+            tk.Button(self.extend_window_r, text="Update", font=(self.font, self.font_size), command=self.update_qty).pack(pady=10)
 
     def update_qty(self):
         try:
@@ -454,6 +471,46 @@ class main_UI:
         settings_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(settings_tab, text='Settings')
 
+		# Font Type
+        self.font_type_label = ctk.CTkLabel(settings_tab, text="Font Type:", font=(self.font, self.font_size))
+        self.font_type_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        self.font_type_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.font)
+        self.font_type_entry.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        # Font Size
+        self.font_size_label = ctk.CTkLabel(settings_tab, text="Font Size:", font=(self.font, self.font_size))
+        self.font_size_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+        self.font_size_entry = ctk.CTkEntry(settings_tab,  placeholder_text=self.font_size)
+        self.font_size_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
+        # Theme
+        self.theme_label = ctk.CTkLabel(settings_tab, text="Theme:", font=(self.font, self.font_size))
+        self.theme_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        self.theme_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.theme)
+        self.theme_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
+        # Zoom
+        self.zoom_label = ctk.CTkLabel(settings_tab, text="Zoom:", font=(self.font, self.font_size))
+        self.zoom_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+        self.zoom_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.zoom)
+        self.zoom_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
+
+
+        # Apply Button
+        self.apply_button = ctk.CTkButton(settings_tab, text="Apply Settings", command=self.apply_settings)
+        self.apply_button.grid(row=4, column=0, columnspan=2, padx=10, pady=20)
+        # Save Button
+        self.save_button = ctk.CTkButton(settings_tab, text="Save Settings", command=self.save_settings)
+        self.save_button.grid(row=5, column=0, columnspan=2, padx=10, pady=20)
+        
+    def apply_settings(self):
+        self.font = self.font_type_entry.get()
+        self.font_size = self.font_size_entry.get()
+        self.theme = self.theme_entry.get()
+        self.zoom = self.zoom_entry.get()
+        print(self.font, self.font_size, self.theme, self.zoom)
+        self.main.destroy()
+        main_UI(ctk.CTk(), self.t_id)
+
+    def save_settings(self):
+        json_functions.update_settings(self.font, self.font_size, self.theme, self.zoom)
 
 
 
