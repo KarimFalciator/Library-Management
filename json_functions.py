@@ -8,11 +8,9 @@ def update_settings(font, font_size, theme, zoom):
             print('File does not exist')
             return
 
-        print('File exists')
         # Open and load the existing JSON file
         with open('saved_settings.json', 'r') as file:
             data = json.load(file)
-        print('File loaded')
 
         # Update the data dictionary with new values
         data['Font'] = font
@@ -23,7 +21,6 @@ def update_settings(font, font_size, theme, zoom):
         # Save the updated data back to the JSON file
         with open('saved_settings.json', 'w') as file:
             json.dump(data, file, indent=4)
-        print('File updated')
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -56,5 +53,5 @@ def create_saved():
         return
 
 # Example usage
-if __name__ == '__main__':
-    update_settings('Ariel', '24', 'light', '1')
+# if __name__ == '__main__':
+#     update_settings('Ariel', '12', 'System', '1')

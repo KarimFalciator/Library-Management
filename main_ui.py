@@ -472,20 +472,39 @@ class main_UI:
         self.Notebook.add(settings_tab, text='Settings')
 
 		# Font Type
-        self.font_type_label = ctk.CTkLabel(settings_tab, text="Font Type:", font=(self.font, self.font_size))
-        self.font_type_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        self.font_type_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.font)
-        self.font_type_entry.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        self.fontLabel = ctk.CTkLabel(settings_tab, text="Font Type", font=(self.font, self.font_size))
+        self.fontLabel.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+
+		# Font Radio Buttons
+        self.fontVar = tk.StringVar()
+
+        self.Ariel = ctk.CTkRadioButton(settings_tab, text="Ariel", variable=self.fontVar, value="Ariel")
+        self.Ariel.grid(row=0, column=1, padx=20, pady=20, sticky="ew")
+
+        self.CourierNew = ctk.CTkRadioButton(settings_tab, text="Courier New", variable=self.fontVar, value="Courier New")
+        self.CourierNew.grid(row=0, column=2, padx=20, pady=20, sticky="ew")
+		
+        self.NewRomans = ctk.CTkRadioButton(settings_tab, text="Roman New Times", variable=self.fontVar, value="Roman New Times")
+        self.NewRomans.grid(row=0, column=3, padx=20, pady=20, sticky="ew")
         # Font Size
         self.font_size_label = ctk.CTkLabel(settings_tab, text="Font Size:", font=(self.font, self.font_size))
         self.font_size_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
         self.font_size_entry = ctk.CTkEntry(settings_tab,  placeholder_text=self.font_size)
         self.font_size_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
         # Theme
-        self.theme_label = ctk.CTkLabel(settings_tab, text="Theme:", font=(self.font, self.font_size))
-        self.theme_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        self.theme_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.theme)
-        self.theme_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
+        self.themeLabel = ctk.CTkLabel(settings_tab, text="Theme Type", font=(self.font, self.font_size))
+        self.themeLabel.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
+
+        self.themeVar = tk.StringVar()
+
+        self.Light = ctk.CTkRadioButton(settings_tab, text="Light", variable=self.fontVar, value="light")
+        self.Light.grid(row=2, column=1, padx=20, pady=20, sticky="ew")
+
+        self.Dark = ctk.CTkRadioButton(settings_tab, text="Dark", variable=self.fontVar, value="dark")
+        self.Dark.grid(row=2, column=2, padx=20, pady=20, sticky="ew")
+		
+        self.System = ctk.CTkRadioButton(settings_tab, text="System", variable=self.fontVar, value="System")
+        self.System.grid(row=2, column=3, padx=20, pady=20, sticky="ew")
         # Zoom
         self.zoom_label = ctk.CTkLabel(settings_tab, text="Zoom:", font=(self.font, self.font_size))
         self.zoom_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
@@ -497,26 +516,24 @@ class main_UI:
         self.save_button.grid(row=5, column=0, columnspan=2, padx=10, pady=20)
 
     def save_settings(self):
-        # Validate font size
-        font_size_input = self.font_size_entry.get().strip()
-        if not font_size_input.isdigit():
-            messagebox.showerror("Invalid Input", "Font size must be a positive integer.")
-            return
-        font_size = int(font_size_input)
+        font = self.fontVar.get()
+        font_size = self.font_size_entry.get().strip()
+        theme = self.themeVar.get()
+        zoom = self.zoom_entry.get().strip()
 
-        # Validate zoom level
-        zoom_input = self.zoom_entry.get().strip()
-        try:
-            zoom = float(zoom_input)
-            if zoom <= 0:
-                raise ValueError("Zoom must be greater than zero.")
-        except ValueError:
-            messagebox.showerror("Invalid Input", "Zoom must be a positive number.")
-            return
+        if font_size:
+            if int(font_size) <= 0:
+                messagebox.showerror("Invalid Input", "Font size must be a positive integer.")
+                return
 
-        # Validate other inputs
-        font = self.font_type_entry.get().strip()
-        theme = self.theme_entry.get().strip()
+        if not font:
+            font = self.font
+        if not font_size:
+            font_size = self.font_size
+        if not theme:
+            theme = self.theme
+        if not zoom:
+            zoom = self.zoom
 
         # Save settings
         json_functions.update_settings(font, font_size, theme, zoom)
