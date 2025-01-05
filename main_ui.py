@@ -43,7 +43,7 @@ class main_UI:
 
         # Customizing the notebook tabs to match CustomTkinter
         style.configure('TNotebook', background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1])
-        style.configure('TNotebook.Tab', font=('Arial', 12), padding=[10, 5], background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][0])
+        style.configure('TNotebook.Tab', font=(self.font, self.font_size - 1), padding=[10, 5], background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][0])
         style.map("TNotebook.Tab", background=[("selected", ctk.ThemeManager.theme["CTkButton"]["fg_color"][1])])
 
         # Create a ttk Notebook, styled to match CustomTkinter
@@ -74,7 +74,7 @@ class main_UI:
 
         treestyle = ttk.Style()
         treestyle.theme_use('default')
-        treestyle.configure("Treeview", font=(self.font, self.font_size), background=bg_color_home, foreground=text_color_home, fieldbackground=bg_color_home, borderwidth=0)
+        treestyle.configure("Treeview", font=(self.font, self.font_size -1), background=bg_color_home, foreground=text_color_home, fieldbackground=bg_color_home, borderwidth=0)
         treestyle.map('Treeview', background=[('selected', bg_color_home)], foreground=[('selected', selected_color_home)])
         self.main.bind("<<TreeviewSelect>>", lambda event: self.main.focus_set())
 
@@ -109,17 +109,17 @@ class main_UI:
 
         self.h_s_id_CTklabel = ctk.CTkLabel(home_tab, text="Student ID:", font=(self.font, self.font_size))
         self.h_s_id_CTklabel.grid(row=2, column=0, padx=5, pady=5)
-        self.h_s_id_entry = ctk.CTkEntry(home_tab)
+        self.h_s_id_entry = ctk.CTkEntry(home_tab, font=(self.font, self.font_size))
         self.h_s_id_entry.grid(row=3, column=0, padx=5, pady=5)
 
         self.h_r_id_CTklabel = ctk.CTkLabel(home_tab, text="Resource ID:", font=(self.font, self.font_size))
         self.h_r_id_CTklabel.grid(row=2, column=1, padx=5, pady=5)
-        self.h_r_id_entry = ctk.CTkEntry(home_tab)
+        self.h_r_id_entry = ctk.CTkEntry(home_tab, font=(self.font, self.font_size))
         self.h_r_id_entry.grid(row=3, column=1, padx=5, pady=5)
 
         self.h_days_CTklabel = ctk.CTkLabel(home_tab, text="Days borrowed:", font=(self.font, self.font_size))
         self.h_days_CTklabel.grid(row=2, column=2, padx=5, pady=5)
-        self.h_days_entry = ctk.CTkEntry(home_tab)
+        self.h_days_entry = ctk.CTkEntry(home_tab, font=(self.font, self.font_size))
         self.h_days_entry.grid(row=3, column=2, padx=5, pady=5)
 
         self.add_borrowed = ctk.CTkButton(home_tab, text="Add Borrowed resource", font=(self.font, self.font_size), command=self.add_borrowed_resource)
@@ -174,7 +174,7 @@ class main_UI:
             self.extend_window.title("Extend Due Date")
 
             tk.Label(self.extend_window, text="Enter number of days to extend:", font=(self.font, self.font_size),).pack(pady=10)
-            self.days_entry = tk.Entry(self.extend_window)
+            self.days_entry = tk.Entry(self.extend_window, font=(self.font, self.font_size))
             self.days_entry.pack(pady=5)
 
             tk.Button(self.extend_window, text="Extend", font=(self.font, self.font_size), command=self.update_due_date).pack(pady=10)
@@ -350,17 +350,17 @@ class main_UI:
 
         self.r_type_CTklabel = ctk.CTkLabel(resources_tab, text="Object Name:", font=(self.font, self.font_size))
         self.r_type_CTklabel.grid(row=2, column=0, padx=5, pady=5)
-        self.r_type_entry = ctk.CTkEntry(resources_tab)
+        self.r_type_entry = ctk.CTkEntry(resources_tab, font=(self.font, self.font_size))
         self.r_type_entry.grid(row=3, column=0, padx=5, pady=5)
 
         self.r_des_CTklabel = ctk.CTkLabel(resources_tab, text="Model/Description:", font=(self.font, self.font_size))
         self.r_des_CTklabel.grid(row=2, column=1, padx=5, pady=5)
-        self.r_des_entry = ctk.CTkEntry(resources_tab)
+        self.r_des_entry = ctk.CTkEntry(resources_tab, font=(self.font, self.font_size))
         self.r_des_entry.grid(row=3, column=1, padx=5, pady=5)
 
         self.r_qty_CTklabel = ctk.CTkLabel(resources_tab, text="Number of resources:", font=(self.font, self.font_size))
         self.r_qty_CTklabel.grid(row=2, column=2, padx=5, pady=5)
-        self.r_qty_entry = ctk.CTkEntry(resources_tab)
+        self.r_qty_entry = ctk.CTkEntry(resources_tab, font=(self.font, self.font_size))
         self.r_qty_entry.grid(row=3, column=2, padx=5, pady=5)
 
         self.add_resources_button = ctk.CTkButton(resources_tab, text="Add New Resources", font=(self.font, self.font_size), command=self.add_resources)
@@ -406,7 +406,7 @@ class main_UI:
             self.extend_window_r.title("Update Quantity")
 
             tk.Label(self.extend_window_r, text="Enter number of resources:", font=(self.font, self.font_size)).pack(pady=10)
-            self.qty_entry = tk.Entry(self.extend_window_r)
+            self.qty_entry = tk.Entry(self.extend_window_r, font=(self.font, self.font_size))
             self.qty_entry.pack(pady=5)
 
             tk.Button(self.extend_window_r, text="Update", font=(self.font, self.font_size), command=self.update_qty).pack(pady=10)
@@ -473,23 +473,23 @@ class main_UI:
 
 		# Font Type
         self.fontLabel = ctk.CTkLabel(settings_tab, text="Font Type", font=(self.font, self.font_size))
-        self.fontLabel.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        self.fontLabel.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
 		# Font Radio Buttons
         self.fontVar = tk.StringVar()
 
-        self.Ariel = ctk.CTkRadioButton(settings_tab, text="Ariel", variable=self.fontVar, value="Ariel")
+        self.Ariel = ctk.CTkRadioButton(settings_tab, text="Ariel", font=(self.font, self.font_size), variable=self.fontVar, value="Ariel")
         self.Ariel.grid(row=0, column=1, padx=20, pady=20, sticky="ew")
 
-        self.CourierNew = ctk.CTkRadioButton(settings_tab, text="Courier New", variable=self.fontVar, value="Courier New")
+        self.CourierNew = ctk.CTkRadioButton(settings_tab, text="Courier New", font=(self.font, self.font_size), variable=self.fontVar, value="Courier New")
         self.CourierNew.grid(row=0, column=2, padx=20, pady=20, sticky="ew")
 		
-        self.NewRomans = ctk.CTkRadioButton(settings_tab, text="Roman New Times", variable=self.fontVar, value="Roman New Times")
+        self.NewRomans = ctk.CTkRadioButton(settings_tab, text="Roman New Times", font=(self.font, self.font_size), variable=self.fontVar, value="Roman New Times")
         self.NewRomans.grid(row=0, column=3, padx=20, pady=20, sticky="ew")
         # Font Size
         self.font_size_label = ctk.CTkLabel(settings_tab, text="Font Size:", font=(self.font, self.font_size))
         self.font_size_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        self.font_size_entry = ctk.CTkEntry(settings_tab,  placeholder_text=self.font_size)
+        self.font_size_entry = ctk.CTkEntry(settings_tab, font=(self.font, self.font_size),  placeholder_text=self.font_size)
         self.font_size_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
         # Theme
         self.themeLabel = ctk.CTkLabel(settings_tab, text="Theme Type", font=(self.font, self.font_size))
@@ -497,29 +497,31 @@ class main_UI:
 
         self.themeVar = tk.StringVar()
 
-        self.Light = ctk.CTkRadioButton(settings_tab, text="Light", variable=self.fontVar, value="light")
+        self.Light = ctk.CTkRadioButton(settings_tab, text="Light", font=(self.font, self.font_size), variable=self.themeVar, value="light")
         self.Light.grid(row=2, column=1, padx=20, pady=20, sticky="ew")
 
-        self.Dark = ctk.CTkRadioButton(settings_tab, text="Dark", variable=self.fontVar, value="dark")
+        self.Dark = ctk.CTkRadioButton(settings_tab, text="Dark", font=(self.font, self.font_size), variable=self.themeVar, value="dark")
         self.Dark.grid(row=2, column=2, padx=20, pady=20, sticky="ew")
 		
-        self.System = ctk.CTkRadioButton(settings_tab, text="System", variable=self.fontVar, value="System")
+        self.System = ctk.CTkRadioButton(settings_tab, text="System", font=(self.font, self.font_size), variable=self.themeVar, value="System")
         self.System.grid(row=2, column=3, padx=20, pady=20, sticky="ew")
         # Zoom
         self.zoom_label = ctk.CTkLabel(settings_tab, text="Zoom:", font=(self.font, self.font_size))
         self.zoom_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
-        self.zoom_entry = ctk.CTkEntry(settings_tab, placeholder_text=self.zoom)
+        self.zoom_entry = ctk.CTkEntry(settings_tab, font=(self.font, self.font_size), placeholder_text=self.zoom)
         self.zoom_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
 
         # Save Button
-        self.save_button = ctk.CTkButton(settings_tab, text="Save Settings", command=self.save_settings)
+        self.save_button = ctk.CTkButton(settings_tab, text="Save Settings", font=(self.font, self.font_size), command=self.save_settings)
         self.save_button.grid(row=5, column=0, columnspan=2, padx=10, pady=20)
+
+        self.reccomendation = ctk.CTkLabel(settings_tab, text="Recommended Zoom: 0.5 - 2. And make sure it works with the font size", font=(self.font, self.font_size))
 
     def save_settings(self):
         font = self.fontVar.get()
-        font_size = self.font_size_entry.get().strip()
+        font_size = self.font_size_entry.get()
         theme = self.themeVar.get()
-        zoom = self.zoom_entry.get().strip()
+        zoom = self.zoom_entry.get()
 
         if font_size:
             if int(font_size) <= 0:
