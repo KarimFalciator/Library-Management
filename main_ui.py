@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import json
 import os
 import json_functions
+import re
 
 class main_UI:
 
@@ -53,11 +54,13 @@ class main_UI:
         self.create_home_tab()
         self.create_returned_tab()
         self.create_resources_tab()
+        self.create_students_tab()
         self.create_settings_tab()
         self.create_help_tab()
         self.add_borrowed_from_db()
         self.add_previous_from_db()
         self.add_resources_from_db()
+        self.add_students_from_db()
 
     # home tab ---------------------------------------------------------------
     
@@ -93,7 +96,7 @@ class main_UI:
         self.current_tree.column('s_id', width=int(90*self.zoom))
         self.current_tree.column('r_id', width=int(90*self.zoom))
         self.current_tree.column('b_date', width=int(105*self.zoom))
-        self.current_tree.column('d_date', width=int(90*self.zoom))
+        self.current_tree.column('d_date', width=int(105*self.zoom))
         self.current_tree.column('r_date', width=int(105*self.zoom))
 
         self.current_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5, sticky='nsew')
@@ -222,7 +225,7 @@ class main_UI:
         returned_date = (datetime.now() + timedelta(days=h_days)).strftime('%Y-%m-%d')
         ref = database.get_last_ref(self.conn) + 1
 
-        if database.check_resource_quantity(self.conn, h_r_id, self.t_id) and database.check_student(self.conn, h_s_id):
+        if database.check_resource_quantity(self.conn, h_r_id, self.t_id) and database.check_student(self.conn, h_s_id) and h_days > 0:
             database.new_borrowed(self.conn, h_s_id, h_r_id, self.t_id, h_days)
             # Insert into Treeview
             self.current_tree.insert('', '0', values=(ref, h_s_id, h_r_id, borrowed_date, returned_date, 'None'))
@@ -233,7 +236,7 @@ class main_UI:
             self.refresh_current_tree()
             self.refresh_resources_tree()
         else:
-            messagebox.showerror('Error', 'Resource not available or Student does not exist')
+            messagebox.showerror('Error', 'Resource not available or Student does not exist or Number of days is invalid')
 
     def add_borrowed_from_db(self):
         # Fetch all borrowed records from the database
@@ -276,7 +279,7 @@ class main_UI:
         self.returned_tree.column('s_id', width=int(90*self.zoom))
         self.returned_tree.column('r_id', width=int(90*self.zoom))
         self.returned_tree.column('b_date', width=int(105*self.zoom))
-        self.returned_tree.column('d_date', width=int(90*self.zoom))
+        self.returned_tree.column('d_date', width=int(105*self.zoom))
         self.returned_tree.column('r_date', width=int(105*self.zoom))
 
         self.returned_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5, sticky='nsew')
@@ -372,8 +375,8 @@ class main_UI:
         if selected_item:
             
             context_menu_resources = tk.Menu(event.widget, tearoff=0)
-            context_menu_resources.add_command(label="Return Object", font=(self.font, self.font_size), command= self.return_object)
-            context_menu_resources.add_command(label="Extend Due Date", font=(self.font, self.font_size), command= self.extend_borrowed)
+            context_menu_resources.add_command(label="Remove Resource", font=(self.font, self.font_size), command= self.remove_resources)
+            context_menu_resources.add_command(label="Increase Quantity", font=(self.font, self.font_size), command= self.upd_qty)
             context_menu_resources.add_command(label="close", font=(self.font, self.font_size), command= self.close_context_menu)
 
             context_menu_resources.post(event.x_root, event.y_root)
@@ -447,6 +450,7 @@ class main_UI:
 
 
         if database.new_resource(self.conn, r_type, r_des, r_qty, self.t_id):
+            database.new_resource(self.conn, r_type, r_des, r_qty, self.t_id)
             # Insert into Treeview
             self.resources_tree.insert('', '0', values=(r_type, r_des, r_qty))
             # Clear the entry fields
@@ -465,6 +469,114 @@ class main_UI:
         for record in resources:
             self.resources_tree.insert('', 'end', values=record)
 
+    # Students list tab --------------------------------------------------------------
+    def create_students_tab(self):
+        students_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
+        self.Notebook.add(students_tab, text='Students List')
+
+        columns_students = ('s_id', 's_fname', 's_lname', 's_email', 's_phone')
+        self.students_tree = ttk.Treeview(students_tab, columns=columns_students, show='headings')
+
+        bg_color_students = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkFrame"]["fg_color"])
+        text_color_students = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkLabel"]["text_color"])
+        selected_color_students = self.main._apply_appearance_mode(ctk.ThemeManager.theme["CTkButton"]["fg_color"])
+
+        treestyle = ttk.Style()
+        treestyle.theme_use('default')
+        treestyle.configure("Treeview", background=bg_color_students, foreground=text_color_students, fieldbackground=bg_color_students, borderwidth=0)
+        treestyle.map('Treeview', background=[('selected', bg_color_students)], foreground=[('selected', selected_color_students)])
+        self.main.bind("<<TreeviewSelect>>", lambda event: self.main.focus_set())
+
+        self.students_tree.bind("<Button-3>", self.show_context_menu_resources)
+
+        # Define headings
+        self.students_tree.heading('s_id', text='Student ID')
+        self.students_tree.heading('s_fname', text='First Name')
+        self.students_tree.heading('s_lname', text='Last Name')
+        self.students_tree.heading('s_email', text='Email')
+        self.students_tree.heading('s_phone', text='Phone Number')
+
+        # Define column widths
+        self.students_tree.column('s_id', width=int(140*self.zoom))
+        self.students_tree.column('s_fname', width=int(140*self.zoom))
+        self.students_tree.column('s_lname', width=int(140*self.zoom))
+        self.students_tree.column('s_email', width=int(140*self.zoom))
+        self.students_tree.column('s_phone', width=int(140*self.zoom))
+
+        self.students_tree.grid(row=0, column=0, columnspan=4, padx=10, pady=5, sticky='nsew')
+
+        # Add a vertical scrollbar
+        scrollbar_students = ttk.Scrollbar(students_tab, orient='vertical', command=self.students_tree.yview)
+        scrollbar_students.grid(row=0, column=4, sticky='ns')
+        self.students_tree.configure(yscrollcommand=scrollbar_students.set)
+
+        # Add Borrowed ResourceForm
+        self.add_students_CTklable = ctk.CTkLabel(students_tab, text="Add a new student:", font=(self.font, self.font_size))
+        self.add_students_CTklable.grid(row=1, column=0, padx=5, pady=0, sticky='n')
+
+        self.s_fname_CTklabel = ctk.CTkLabel(students_tab, text="First Name:", font=(self.font, self.font_size))
+        self.s_fname_CTklabel.grid(row=2, column=0, padx=5, pady=5)
+        self.s_fname_entry = ctk.CTkEntry(students_tab, font=(self.font, self.font_size))
+        self.s_fname_entry.grid(row=3, column=0, padx=5, pady=5)
+
+        self.s_lname_CTklabel = ctk.CTkLabel(students_tab, text="Last Name:", font=(self.font, self.font_size))
+        self.s_lname_CTklabel.grid(row=2, column=1, padx=5, pady=5)
+        self.s_lname_entry = ctk.CTkEntry(students_tab, font=(self.font, self.font_size))
+        self.s_lname_entry.grid(row=3, column=1, padx=5, pady=5)
+
+        self.s_phone_CTklabel = ctk.CTkLabel(students_tab, text="Student Phone Number:", font=(self.font, self.font_size))
+        self.s_phone_CTklabel.grid(row=2, column=2, padx=5, pady=5)
+        self.s_phone_entry = ctk.CTkEntry(students_tab, font=(self.font, self.font_size))
+        self.s_phone_entry.grid(row=3, column=2, padx=5, pady=5)
+
+        self.s_email_CTklabel = ctk.CTkLabel(students_tab, text="Student Email:", font=(self.font, self.font_size))
+        self.s_email_CTklabel.grid(row=2, column=3, padx=5, pady=5)
+        self.s_email_entry = ctk.CTkEntry(students_tab, font=(self.font, self.font_size))
+        self.s_email_entry.grid(row=3, column=3, padx=5, pady=5)
+
+        self.add_students_button = ctk.CTkButton(students_tab, text="Add New Student", font=(self.font, self.font_size), command=self.add_students)
+        self.add_students_button.grid(row=4, column=1, columnspan=1, pady=10)
+
+    def add_students(self):
+        # Fetch details from entry widgets
+        s_id = database.generate_student_id()
+        s_fname = self.r_des_entry.get()
+        s_lname = self.r_qty_entry.get()
+        s_email = self.r_des_entry.get()
+        s_phone = self.r_qty_entry.get()
+        
+        email_fromat = regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]')
+        phone_format = regex(r'^\d{10}$')
+
+
+        if database.new_student(self.conn,s_id, s_fname, s_lname, s_email, s_phone) and email_fromat.match(s_email) and s_phone.match(phone_format):
+            # Insert into Treeview
+            self.students_tree.insert('', '0', values=(s_id, s_fname, s_lname, s_email, s_phone))
+            # Clear the entry fields
+            self.s_fname_entry.delete(0, 'end')
+            self.s_lname_entry.delete(0, 'end')
+            self.s_email_entry.delete(0, 'end')
+            self.s_phone_entry.delete(0, 'end')
+            self.refresh_students_tree()
+        else:
+            messagebox.showerror('Error', 'Student already exists or student format or phone format are invalid')
+
+    def add_students_from_db(self):
+        # Fetch all borrowed records from the database
+        students = database.get_all_students(self.conn)
+
+        # Insert each borrowed record into the Treeview
+        for record in students:
+            self.students_tree.insert('', 'end', values=record)
+
+    def refresh_students_tree(self):
+        for item in self.students_tree.get_children():
+            self.students_tree.delete(item)
+
+        students = database.get_all_students(self.conn)
+
+        for record in students:
+            self.students_tree.insert('', 'end', values=record)
 
     # settings
     def create_settings_tab(self):
@@ -547,6 +659,21 @@ class main_UI:
     def create_help_tab(self):
         help_tab = ctk.CTkFrame(self.Notebook, width=300, height=490)
         self.Notebook.add(help_tab, text='Help')
+
+        self.help_label = ctk.CTkLabel(help_tab, text="Help and Instructions", font=(self.font, self.font_size))
+        self.help_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        self.help_text = ctk.CTkTextbox(help_tab, font=(self.font, self.font_size), width=int(575*self.zoom), height=int(300*self.zoom))
+        self.help_text.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+        self.help_text.insert('0.0', "This is a lending management system.\n\n"
+                                       "1. To borrow a resource, enter the Student ID, Resource ID, and number of days in the 'Home' tab.\n"
+                                       "2. To return a resource, right-click on the borrowed item in the 'Home' tab and select 'Return Object'.\n"
+                                       "3. To extend the due date, right-click on the borrowed item and select 'Extend Due Date'.\n"
+                                       "4. To add new resources, go to the 'Resources List' tab and fill in the details.\n"
+                                       "5. To view returned items, go to the 'Returned Borrowed' tab.\n"
+                                       "6. For settings, go to the 'Settings' tab to customize your preferences.\n"
+                                       "\n\n"
+                                       "If you have any questions, please contact the administrator.")
+        self.help_text.configure(state='disabled')
 
 if __name__ == "__main__":  # for testing
     login = ctk.CTk()

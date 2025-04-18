@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # Example usage
     password = "try1"
     hashed = hash_password(password)
-    print(f"Original password: {password}")
+    print(f"Original password: {password}")+
     print(f"Hashed password: {hashed.decode('utf-8')}")
 
     # Verify the password

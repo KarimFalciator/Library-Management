@@ -42,8 +42,7 @@ def generate_student_id():
     return s_id
 
 # Function to insert a student into the database
-def new_student(conn, s_fname, s_lname, s_email, s_number):
-    s_id = generate_student_id()
+def new_student(conn, s_id, s_fname, s_lname, s_email, s_number):
     cursor = conn.cursor()
     student_data = (s_id, s_fname, s_lname, s_email, s_number)
     
@@ -52,6 +51,14 @@ def new_student(conn, s_fname, s_lname, s_email, s_number):
     VALUES (?, ?, ?, ?, ?)
     ''', student_data)
     conn.commit()
+
+# Function to check get all students
+def get_all_students(conn):
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT * FROM students
+    ''')
+    return cursor.fetchall()
 
 # Function to check if a customer exists in the database
 def check_student(conn, s_id):
@@ -164,8 +171,9 @@ def new_resource(conn, r_type, r_des, r_qty, t_id):
     else:
         cursor.execute('''INSERT INTO resources (r_type, r_des, r_qty, t_id) VALUES (?, ?, ?, ?)
         ''', (r_type, r_des, r_qty, t_id,))
+        conn.commit()
         return True
-    conn.commit()
+
 
 def update_resource_qty(conn, r_id, qty, t_id):
     cursor = conn.cursor()

@@ -1,6 +1,6 @@
 {
     "Font": "Courier New",
-    "Font_size": 12,
-    "Theme": "System",
-    "Zoom": 1.0
+    "Font_size": "12",
+    "Theme": "dark",
+    "Zoom": "1.5"
 }

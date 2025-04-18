@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import database
+import encription
+import regex
 
 class CreateAccUI:
 
@@ -72,19 +74,28 @@ class CreateAccUI:
         t_lname = self.t_lname_entry.get()
         t_email = self.t_email_entry.get()
 
-        database.new_teacher(self.conn, t_id, t_pass, t_fname, t_lname, t_email)
+        t_pass = encription.hash_password(t_pass)
+        email_fromat = regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]')
+        phone_format = regex(r'^\d{10}$')
 
-        self.new.destroy()
 
-        t_id_window = tk.Tk()
-        t_id_window.title('New Customer ID')
-        t_id_window.geometry('300x170')
-        t_id_window.resizable(False, False)
-        t_id_window_label = ttk.Label(t_id_window, text='Your new Customer ID is:' + str(t_id))
-        t_id_window_label.pack(pady=10)
+        if email_fromat.match(t_email):
+            database.new_teacher(self.conn, t_id, t_pass, t_fname, t_lname, t_email)
 
-        advice_label = ttk.Label(t_id_window, text='Please keep this ID safe, you will need it to login')
-        advice_label.pack(pady=10)
+            self.new.destroy()
+
+            t_id_window = tk.Tk()
+            t_id_window.title('New Customer ID')
+            t_id_window.geometry('300x170')
+            t_id_window.resizable(False, False)
+            t_id_window_label = ttk.Label(t_id_window, text='Your new Customer ID is:' + str(t_id))
+            t_id_window_label.pack(pady=10)
+
+            advice_label = ttk.Label(t_id_window, text='Please keep this ID safe, you will need it to login')
+            advice_label.pack(pady=10)
+        else:
+            self.worng_email_label = ttk.Label(self.new, text='email is not in correct format', foreground='red')
+            self.worng_email_label.pack(pady=10)
 
     def show_password_teacher(self, event):
         self.teacherPass_entry.config(show='')
@@ -110,7 +121,7 @@ class CreateAccUI:
         self.help_label.pack(padx=10, pady=10)
     
 
-# if __name__ == "__main__":  # for testing
-#     login = tk.Tk()
-#     log = CreateAccUI(login)
-#     login.mainloop()
+if __name__ == "__main__":  # for testing
+    login = tk.Tk()
+    log = CreateAccUI(login)
+    login.mainloop()
