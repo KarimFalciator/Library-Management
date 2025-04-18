@@ -87,7 +87,6 @@ class login_UI:
         check = database.check_teacher_login(self.conn, teacherID, teacherPass)
 
         if check:
-            print('Login Successful')
             success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=(self.font, self.font_size))
             success_label.pack(pady=5)
 

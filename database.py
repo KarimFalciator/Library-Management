@@ -1,6 +1,7 @@
 import sqlite3
 import random
 from datetime import datetime, timedelta
+from encription import hash_password
 
 # Function to connect to the SQLite database
 def connect_to_db(db_name='lending.db'):
@@ -330,7 +331,7 @@ def get_last_ref(conn):
     return cursor.fetchone()[0]
 
 
-# run the program
+# # run the program
 # if __name__ == "__main__":
 #     # Connect to the database
 #     conn = connect_to_db()
@@ -341,8 +342,8 @@ def get_last_ref(conn):
 #     create_resources_table(conn)
 #     create_borrowed_table(conn)
 
-#     Insert a new record in every table
-#     new_teacher(conn, 333333, "b'$2b$12$d49okXVghFH.FiS7FWURbevZoIZcvZ6Ao4YCxxt.TmYNJXWvwGLTa'",'Karim', 'Soliman', 'karimfalciator@gmail.com')
+#     # Insert a new record in every table
+#     new_teacher(conn, 444444, hash_password('try1'),'Karim', 'Soliman', 'karimfalciator@gmail.com')
 #     new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
 #     new_resource(conn, 'camera', 'xyz', 2, 111112)
 #     new_borrowed(conn, 189236, 1, 11112, 3)
