@@ -197,7 +197,10 @@ def check_resource(conn, r_id, t_id):
     SELECT * FROM resources WHERE r_id = ? AND t_id = ?
     ''', (r_id, t_id,))
     resource = cursor.fetchone()
-    r_qty = resource[3]
+    try:
+        r_qty = resource[3]
+    except TypeError:
+        r_qty = 0
     if resource and r_qty > 0:
         return True
     else:
@@ -212,7 +215,7 @@ def check_resource_quantity(conn, r_id, t_id):
     if resource is None:
         return False  # Resource not found
 
-    r_qty = resource[3]  # Assuming the quantity is at index 3
+    r_qty = resource[3]
     return r_qty > 0  # Return True if the quantity is available, otherwise False
 
 
@@ -328,22 +331,22 @@ def get_last_ref(conn):
 
 
 # run the program
-if __name__ == "__main__":
-    # Connect to the database
-    conn = connect_to_db()
+# if __name__ == "__main__":
+#     # Connect to the database
+#     conn = connect_to_db()
 
-    # # Create the tables
-    # create_teachers_table(conn)
-    # create_students_table(conn)
-    # create_resources_table(conn)
-    # create_borrowed_table(conn)
+#     # Create the tables
+#     create_teachers_table(conn)
+#     create_students_table(conn)
+#     create_resources_table(conn)
+#     create_borrowed_table(conn)
 
-    # # Insert a new record in every table
-    # new_teacher(conn, 111111, 'Lepassword1', 'Karim', 'Soliman', 'karimfalciator@gmail.com')
-    # new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
-    # new_resource(conn, 'camera', 'xyz', 1, 111111)
-    # new_borrowed(conn, 189236, 1, 111111)
+#     Insert a new record in every table
+#     new_teacher(conn, 333333, "b'$2b$12$d49okXVghFH.FiS7FWURbevZoIZcvZ6Ao4YCxxt.TmYNJXWvwGLTa'",'Karim', 'Soliman', 'karimfalciator@gmail.com')
+#     new_student(conn, 'Nome1', 'Cognome1', 'email1', 'nummero1')
+#     new_resource(conn, 'camera', 'xyz', 2, 111112)
+#     new_borrowed(conn, 189236, 1, 11112, 3)
 
-    # Close the connection
-    close_connection(conn)
+#     # Close the connection
+#     close_connection(conn)
 

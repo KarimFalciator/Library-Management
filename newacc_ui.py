@@ -110,7 +110,7 @@ class CreateAccUI:
         self.help_label.pack(padx=10, pady=10)
     
 
-if __name__ == "__main__":  # for testing
-    login = tk.Tk()
-    log = CreateAccUI(login)
-    login.mainloop()
+# if __name__ == "__main__":  # for testing
+#     login = tk.Tk()
+#     log = CreateAccUI(login)
+#     login.mainloop()

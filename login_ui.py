@@ -3,9 +3,10 @@ from tkinter import ttk
 import database
 import reset_password
 from main_ui import main_UI
+from newacc_ui import CreateAccUI
+from encription import hash_password
 import json
 import os
-import json_functions
 
 class login_UI:
 
@@ -80,6 +81,8 @@ class login_UI:
     def submit_teacher(self):
         teacherID = self.teacherID_entry.get()
         teacherPass = self.teacherPass_entry.get()
+        teacherPass = hash_password(self.teacherPass_entry.get())
+        print(teacherPass)
 
         check = database.check_teacher_login(self.conn, teacherID, teacherPass)
 
@@ -88,11 +91,12 @@ class login_UI:
             success_label = ctk.CTkLabel(self.login, text='Login Successful', text_color='#009B0F', font=(self.font, self.font_size))
             success_label.pack(pady=5)
 
+     
             # Open main UI
             main_UI(ctk.CTk(), teacherID)
 
             # Properly destroy the login window
-            # self.login.destroy()
+            self.login.destroy()
         else:
             error_label = ctk.CTkLabel(self.login, text='Invalid ID or password', text_color='#FF0400', font=(self.font, self.font_size))
             error_label.pack(pady=5)
@@ -119,14 +123,23 @@ class login_UI:
         self.t_Reset_button = ctk.CTkButton(help_tab, text='Reset Password', font=(self.font, self.font_size), width=22, command=self.reset_teacher_password)
         self.t_Reset_button.pack(padx=10, pady=10)
 
-        self.help_label = ctk.CTkLabel(help_tab, text='Contact your lender', font=(self.font, self.font_size))
+        self.t_new_button = ctk.CTkButton(help_tab, text='New Account', font=(self.font, self.font_size), width=22, command=self.new_teacher_account)
+        self.t_new_button.pack(padx=10, pady=10)
+
+        self.help_label = ctk.CTkLabel(help_tab, text='Contact your manager', font=(self.font, self.font_size))
         self.help_label.pack(padx=10, pady=10)
+
+    def new_teacher_account(self):
+        self.login.destroy()
+        newacc_window = ctk.CTkToplevel()
+        ctk.set_appearance_mode(self.theme)
+        CreateAccUI(newacc_window)
+
         
     def reset_teacher_password(self):
         self.login.destroy()
         reset_window = ctk.CTkToplevel()  # Create a Toplevel window for reset password
-        ctk.set_appearance_mode("System")  # Keep the same appearance mode
-        ctk.set_default_color_theme("blue")  # Keep the same color theme
+        ctk.set_appearance_mode(self.theme)  # Keep the same appearance mode
         reset_password.reset_password_UI(reset_window)  # Pass the new window to the reset password UI
 
 
